@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mail, Phone, MapPin, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { Phone, CheckCircle, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface ContactFormProps {
@@ -156,7 +156,7 @@ Espero su respuesta. Gracias por su atención.`
         setSubmitStatus("idle")
       }, 3000)
       
-    } catch (error) {
+    } catch {
       setSubmitStatus("error")
     }
   }

@@ -91,12 +91,20 @@ const animationVariants = {
   }
 }
 
+interface OptimizedImage {
+  publicId: string
+  alt: string
+  priority: boolean
+  src: string
+  srcLow: string
+}
+
 export default function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
   // Memoizar las URLs de las imágenes con transformaciones
-  const optimizedImages = useMemo(() => 
+  const optimizedImages = useMemo((): OptimizedImage[] => 
     carouselImages.map(img => ({
       ...img,
       src: generateCloudinaryUrl(img.publicId, [CLOUDINARY_CONFIG.transformations.responsive]),
@@ -218,7 +226,7 @@ export default function HeroSection() {
                   variant="medical-outline"
                   className="group w-full sm:w-auto hover:bg-medical-light"
                   style={{
-                    ['--tw-bg-opacity' as any]: '1',
+                    ['--tw-bg-opacity' as string]: '1',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--medical-light)'

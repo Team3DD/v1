@@ -11,14 +11,17 @@ import Image from "next/image"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 
+// ✅ CAMBIO 1: params ahora es Promise
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
+// ✅ CAMBIO 2: generateMetadata ahora es async y usa await params
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = getBlogPost(params.slug)
+  const { slug } = await params
+  const post = getBlogPost(slug)
 
   if (!post) {
     return {
@@ -48,8 +51,10 @@ export async function generateStaticParams() {
   }))
 }
 
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = getBlogPost(params.slug)
+// ✅ CAMBIO 3: El componente principal ahora es async y usa await params
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params
+  const post = getBlogPost(slug)
 
   if (!post) {
     notFound()

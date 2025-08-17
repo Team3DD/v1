@@ -1,24 +1,42 @@
 interface SEOSchemaProps {
   type: "article" | "medicalArticle" | "faqPage"
-  data: any
+  data: Record<string, unknown>
+}
+
+interface FAQItem {
+  question: string
+  answer: string
+}
+
+interface SchemaData extends Record<string, unknown> {
+  title?: string
+  description?: string
+  url?: string
+  publishedAt?: string
+  modifiedAt?: string
+  author?: string
+  medicalCondition?: string
+  conditionDescription?: string
+  faqs?: FAQItem[]
 }
 
 export default function SEOSchema({ type, data }: SEOSchemaProps) {
-  let schema = {}
+  const schemaData = data as SchemaData
+  let schema: Record<string, unknown> = {}
 
   switch (type) {
     case "medicalArticle":
       schema = {
         "@context": "https://schema.org",
         "@type": "MedicalWebPage",
-        name: data.title,
-        description: data.description,
-        url: data.url,
-        datePublished: data.publishedAt,
-        dateModified: data.modifiedAt || data.publishedAt,
+        name: schemaData.title,
+        description: schemaData.description,
+        url: schemaData.url,
+        datePublished: schemaData.publishedAt,
+        dateModified: schemaData.modifiedAt || schemaData.publishedAt,
         author: {
           "@type": "Person",
-          name: data.author,
+          name: schemaData.author,
           jobTitle: "Especialista en Ortopedia y Traumatología",
           worksFor: {
             "@type": "MedicalOrganization",
@@ -35,8 +53,8 @@ export default function SEOSchema({ type, data }: SEOSchemaProps) {
         },
         mainEntity: {
           "@type": "MedicalCondition",
-          name: data.medicalCondition,
-          description: data.conditionDescription,
+          name: schemaData.medicalCondition,
+          description: schemaData.conditionDescription,
         },
         about: {
           "@type": "MedicalSpecialty",
@@ -57,7 +75,7 @@ export default function SEOSchema({ type, data }: SEOSchemaProps) {
       schema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: data.faqs.map((faq: any) => ({
+        mainEntity: schemaData.faqs?.map((faq: FAQItem) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: {
@@ -72,14 +90,14 @@ export default function SEOSchema({ type, data }: SEOSchemaProps) {
       schema = {
         "@context": "https://schema.org",
         "@type": "Article",
-        headline: data.title,
-        description: data.description,
+        headline: schemaData.title,
+        description: schemaData.description,
         author: {
           "@type": "Person",
-          name: data.author,
+          name: schemaData.author,
         },
-        datePublished: data.publishedAt,
-        dateModified: data.modifiedAt || data.publishedAt,
+        datePublished: schemaData.publishedAt,
+        dateModified: schemaData.modifiedAt || schemaData.publishedAt,
       }
   }
 

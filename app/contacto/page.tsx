@@ -1,34 +1,19 @@
 "use client"
 
-import type { Metadata } from "next"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import ContactForm from "@/components/contact-form"
-import { Mail, Phone, MapPin, Clock, AlertTriangle } from "lucide-react"
-
-// Metadata se maneja en el layout.tsx o page.tsx padre
-// export const metadata: Metadata = {
-//   title: "Contacto - Dr. Gil Bocardo | Traumatología y Ortopedia",
-//   description:
-//     "Póngase en contacto con el Dr. Gil Bocardo, especialista en traumatología y ortopedia. Sub especialista en reemplazo articular de cadera y rodilla. Consultorios en Naucalpan.",
-//   keywords: "contacto ortopedista, consulta traumatología, Dr. Gil Bocardo, reemplazo articular, cadera, rodilla, Naucalpan, Satélite",
-// }
+import { MapPin } from "lucide-react"
 
 const MapCard = ({ 
   title, 
   address, 
-  fullAddress, 
-  phone, 
-  whatsapp, 
   schedule, 
   mapSrc, 
   googleMapsUrl 
 }: {
   title: string
   address: string
-  fullAddress: string
-  phone: string
-  whatsapp?: string
   schedule: string
   mapSrc: string
   googleMapsUrl: string
@@ -101,8 +86,6 @@ export default function ContactPage() {
     {
       title: "Hospital San José Satélite",
       address: "Circuito Circunvalación Pte. 53",
-      fullAddress: "Cd. Satélite, 53100 Naucalpan de Juárez, Edo. de México",
-      phone: "55 5572 8930 ext. 522",
       schedule: "Martes y jueves",
       mapSrc: "https://maps.google.com/maps?q=19.5102,-99.2384&t=&z=16&ie=UTF8&output=embed",
       googleMapsUrl: "https://maps.google.com/?q=19.5102,-99.2384"
@@ -110,9 +93,6 @@ export default function ContactPage() {
     {
       title: "Hospital San Ángel Inn Satélite",
       address: "Circuito Centro Comercial No. 20",
-      fullAddress: "Ciudad Satélite, Naucalpan de Juárez, Edo. de México",
-      phone: "+52 55 1675 4809",
-      whatsapp: "+52 55 9188 3839",
       schedule: "Lunes, miércoles y viernes",
       mapSrc: "https://maps.google.com/maps?q=19.5089,-99.2389&t=&z=16&ie=UTF8&output=embed",
       googleMapsUrl: "https://maps.google.com/?q=19.5089,-99.2389"
@@ -171,9 +151,6 @@ export default function ContactPage() {
                   key={index}
                   title={consultorio.title}
                   address={consultorio.address}
-                  fullAddress={consultorio.fullAddress}
-                  phone={consultorio.phone}
-                  whatsapp={consultorio.whatsapp}
                   schedule={consultorio.schedule}
                   mapSrc={consultorio.mapSrc}
                   googleMapsUrl={consultorio.googleMapsUrl}

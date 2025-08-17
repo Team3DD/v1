@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 
 export default function Footer() {
-  const [isClient, setIsClient] = useState(false)
+  const [_isClient, setIsClient] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
