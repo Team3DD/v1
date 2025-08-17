@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap, Award, Users, MapPin } from "lucide-react"
 import Image from "next/image"
@@ -40,7 +41,7 @@ const credentials = [
   },
 ]
 
-export default function AboutSection() {
+export default function AboutSection(): JSX.Element {
   return (
     <section id="sobre-mi" className="py-16 lg:py-24" style={{ backgroundColor: "var(--medical-neutral)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,7 +73,7 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Image - Adjusted to 3:4 aspect ratio */}
+          {/* Image - Sin elementos decorativos problemáticos */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -97,40 +98,19 @@ export default function AboutSection() {
                 <div
                   className="absolute inset-0"
                   style={{ background: `linear-gradient(to top, rgba(47, 65, 86, 0.2) 0%, transparent 100%)` }}
-                ></div>
+                />
               </motion.div>
+              
+              {/* Elemento decorativo simple sin desfase */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+                className="absolute -top-4 -left-4 w-24 h-24 rounded-full -z-10"
+                style={{ backgroundColor: "var(--medical-light)" }}
+              />
             </div>
-
-            {/* Decorative elements with new color palette */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="absolute -bottom-6 -right-6 w-full max-w-md h-full rounded-2xl -z-10 shadow-xl"
-              style={{
-                background: `linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-secondary) 100%)`,
-                aspectRatio: "3/4"
-              }}
-            ></motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="absolute -top-4 -left-4 w-24 h-24 rounded-full -z-20"
-              style={{ backgroundColor: "var(--medical-light)" }}
-            ></motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.9 }}
-              className="absolute top-1/2 -right-8 w-16 h-16 rounded-full -z-20"
-              style={{ backgroundColor: "var(--medical-white)" }}
-            ></motion.div>
           </motion.div>
         </div>
 
@@ -144,7 +124,7 @@ export default function AboutSection() {
         >
           {credentials.map((credential, index) => (
             <motion.div
-              key={index}
+              key={`credential-${index}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -169,7 +149,7 @@ export default function AboutSection() {
                   <ul className="space-y-1.5">
                     {credential.items.map((item, itemIndex) => (
                       <li
-                        key={itemIndex}
+                        key={`item-${index}-${itemIndex}`}
                         className="text-xs leading-relaxed"
                         style={{ color: "var(--medical-secondary)" }}
                       >

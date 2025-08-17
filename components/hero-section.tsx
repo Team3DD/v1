@@ -15,7 +15,7 @@ const CLOUDINARY_CONFIG = {
     auto_quality: "q_auto",
     auto_format: "f_auto",
     optimize: "c_scale,w_1000",
-    responsive: "c_fit,w_1000,h_600,g_north"
+    responsive: "c_fill,w_600,h_600,g_center" // Cuadrado 1:1 centrado
   }
 }
 
@@ -91,24 +91,16 @@ const animationVariants = {
   }
 }
 
-interface OptimizedImage {
-  publicId: string
-  alt: string
-  priority: boolean
-  src: string
-  srcLow: string
-}
-
 export default function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
-  // Memoizar las URLs de las imágenes con transformaciones
-  const optimizedImages = useMemo((): OptimizedImage[] => 
+  // Memoizar las URLs de las imágenes con transformaciones centradas
+  const optimizedImages = useMemo(() => 
     carouselImages.map(img => ({
       ...img,
-      src: generateCloudinaryUrl(img.publicId, [CLOUDINARY_CONFIG.transformations.responsive]),
-      srcLow: generateCloudinaryUrl(img.publicId, ["c_scale,w_400", "q_auto:low"])
+      src: generateCloudinaryUrl(img.publicId, ["c_fill,w_600,h_600,g_center"]), // Cuadrado centrado
+      srcLow: generateCloudinaryUrl(img.publicId, ["c_scale,w_300", "q_auto:low", "g_center"])
     })),
     []
   )
@@ -226,7 +218,7 @@ export default function HeroSection() {
                   variant="medical-outline"
                   className="group w-full sm:w-auto hover:bg-medical-light"
                   style={{
-                    ['--tw-bg-opacity' as string]: '1',
+                    ['--tw-bg-opacity' as any]: '1',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--medical-light)'
@@ -298,10 +290,8 @@ export default function HeroSection() {
                   backgroundColor: 'var(--medical-white)'
                 }}
               >
-                <div 
-                  className="relative h-[500px] lg:h-[600px]"
-                  style={{ backgroundColor: 'var(--medical-light)' }}
-                >
+                {/* Contenedor cuadrado 1:1 */}
+                <div className="relative w-full aspect-square">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentImage}
@@ -309,26 +299,27 @@ export default function HeroSection() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.5 }}
-                      className="absolute inset-0"
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ backgroundColor: 'var(--medical-light)' }}
                     >
                       <Image
                         src={optimizedImages[currentImage].src}
                         alt={optimizedImages[currentImage].alt}
                         fill
-                        className="object-cover object-top"
+                        className="object-contain" // Cambiado de object-cover a object-contain para centrar
                         priority={optimizedImages[currentImage].priority}
                         placeholder="blur"
                         blurDataURL={optimizedImages[currentImage].srcLow}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
                         style={{ 
                           outline: 'none', 
                           border: 'none'
                         }}
                       />
                       <div
-                        className="absolute inset-0"
+                        className="absolute inset-0 pointer-events-none"
                         style={{ 
-                          background: `linear-gradient(to top, rgba(3, 105, 161, 0.3) 0%, transparent 100%)` 
+                          background: `linear-gradient(to top, rgba(3, 105, 161, 0.1) 0%, transparent 100%)` 
                         }}
                       />
                     </motion.div>
