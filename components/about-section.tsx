@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap, Award, Users, MapPin } from "lucide-react"
 import Image from "next/image"
@@ -41,7 +41,24 @@ const credentials = [
   },
 ]
 
-export default function AboutSection(): JSX.Element {
+export default function AboutSection() {
+  // Solución para evitar errores de hidratación por extensiones del navegador
+  useEffect(() => {
+    // Suprimir warnings de hidratación en desarrollo
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      const originalError = console.error
+      console.error = (...args) => {
+        if (
+          typeof args[0] === 'string' && 
+          args[0].includes('Warning: Extra attributes from the server')
+        ) {
+          // Ignorar warnings específicos de extensiones del navegador
+          return
+        }
+        originalError.apply(console, args)
+      }
+    }
+  }, [])
   return (
     <section id="sobre-mi" className="py-16 lg:py-24" style={{ backgroundColor: "var(--medical-neutral)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
