@@ -72,26 +72,26 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Image - Equal width and larger */}
+          {/* Image - Adjusted to 3:4 aspect ratio */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
+            className="relative flex justify-center lg:justify-end"
           >
-            <div className="relative">
+            <div className="relative w-full max-w-md">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
                 className="relative overflow-hidden rounded-2xl shadow-2xl"
+                style={{ aspectRatio: "3/4" }}
               >
                 <Image
                   src="https://res.cloudinary.com/dzidbhqli/image/upload/v1755386372/1-DOC1_g17mjo.jpg"
                   alt="Dr. Gil Bocardo - Especialista en Ortopedia y Traumatología"
-                  width={600}
-                  height={700}
-                  className="w-full h-auto object-cover"
+                  fill
+                  className="object-cover object-center"
                   priority
                 />
                 <div
@@ -107,9 +107,10 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="absolute -bottom-6 -right-6 w-full h-full rounded-2xl -z-10 shadow-xl"
+              className="absolute -bottom-6 -right-6 w-full max-w-md h-full rounded-2xl -z-10 shadow-xl"
               style={{
                 background: `linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-secondary) 100%)`,
+                aspectRatio: "3/4"
               }}
             ></motion.div>
 
@@ -133,7 +134,7 @@ export default function AboutSection() {
           </motion.div>
         </div>
 
-        {/* Credentials Cards */}
+        {/* Credentials Cards - Reduced padding */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -156,20 +157,20 @@ export default function AboutSection() {
                   borderColor: "var(--medical-light)",
                 }}
               >
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
+                <CardContent className="p-4">
+                  <div className="flex items-center mb-3">
                     <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: "var(--medical-light)" }}>
                       <credential.icon className="h-5 w-5" style={{ color: "var(--medical-primary)" }} />
                     </div>
-                    <h3 className="font-semibold" style={{ color: "var(--medical-primary)" }}>
+                    <h3 className="font-semibold text-sm" style={{ color: "var(--medical-primary)" }}>
                       {credential.title}
                     </h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-1.5">
                     {credential.items.map((item, itemIndex) => (
                       <li
                         key={itemIndex}
-                        className="text-sm leading-relaxed"
+                        className="text-xs leading-relaxed"
                         style={{ color: "var(--medical-secondary)" }}
                       >
                         {item}
