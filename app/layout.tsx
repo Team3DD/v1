@@ -2,8 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Merriweather } from "next/font/google"
 import "./globals.css"
-import Chatbot from "@/components/chatbot"
-import ScrollToTop from "@/components/scroll-to-top"
+/*import Chatbot from "@/components/chatbot"*/
+/* import ScrollToTop from "@/components/scroll-to-top" */
 
 const inter = Inter({
   subsets: ["latin"],
@@ -202,10 +202,13 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="font-sans antialiased">
+      <body 
+        className="font-sans antialiased"
+        suppressHydrationWarning={true}
+      >
         {children}
-        <Chatbot />
-        <ScrollToTop />
+        {/* <Chatbot /> */}
+        {/* <ScrollToTop /> */}
       </body>
     </html>
   )

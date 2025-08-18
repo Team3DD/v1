@@ -152,22 +152,47 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Actualizando scrollbar con nueva paleta de colores sky/cyan/blue */
+/* Ocultando scrollbar en todas las versiones pero manteniendo funcionalidad */
+/* Para navegadores WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  height: 0px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--medical-neutral);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--medical-secondary);
-  border-radius: 4px;
+  background: transparent;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--medical-primary);
+  background: transparent;
+}
+
+/* Para Firefox */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Para Internet Explorer y Edge heredado */
+body {
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Asegurando que todos los elementos con scroll tengan la scrollbar oculta */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
 }
 
 /* Enhanced animations and transitions */

@@ -15,7 +15,7 @@ const CLOUDINARY_CONFIG = {
     auto_quality: "q_auto",
     auto_format: "f_auto",
     optimize: "c_scale,w_1000",
-    responsive: "c_fill,w_600,h_600,g_center" // Cuadrado 1:1 centrado
+    responsive: "c_fill,w_600,h_600,g_center"
   }
 }
 
@@ -92,67 +92,89 @@ const animationVariants = {
 }
 
 export default function HeroSection() {
+  // Estados - FIJO: inicialización consistente para SSR
   const [currentImage, setCurrentImage] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false) // CAMBIADO: inicia en false
+  const [isMounted, setIsMounted] = useState(false)
 
   // Memoizar las URLs de las imágenes con transformaciones centradas
   const optimizedImages = useMemo(() => 
     carouselImages.map(img => ({
       ...img,
-      src: generateCloudinaryUrl(img.publicId, ["c_fill,w_600,h_600,g_center"]), // Cuadrado centrado
+      src: generateCloudinaryUrl(img.publicId, ["c_fill,w_600,h_600,g_center"]),
       srcLow: generateCloudinaryUrl(img.publicId, ["c_scale,w_300", "q_auto:low", "g_center"])
     })),
     []
   )
 
-  // Control automático del carrusel
+  // Fix para hidratación - esperar a que el componente se monte
   useEffect(() => {
-    if (!isAutoPlaying) return
+    setIsMounted(true)
+    setIsAutoPlaying(true) // MOVIDO: activar autoplay solo después del mount
+  }, [])
+
+  // Control automático del carrusel - solo después del mount
+  useEffect(() => {
+    if (!isMounted || !isAutoPlaying) return
     
     const timer = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % carouselImages.length)
     }, 6000)
     
     return () => clearInterval(timer)
-  }, [isAutoPlaying])
+  }, [isMounted, isAutoPlaying])
 
   // Navegación del carrusel
   const nextImage = useCallback(() => {
+    if (!isMounted) return
     setCurrentImage((prev) => (prev + 1) % carouselImages.length)
     setIsAutoPlaying(false)
-  }, [])
+    // Reactivar autoplay después de 10 segundos
+    setTimeout(() => setIsAutoPlaying(true), 10000)
+  }, [isMounted])
 
   const prevImage = useCallback(() => {
+    if (!isMounted) return
     setCurrentImage((prev) => (prev - 1 + carouselImages.length) % carouselImages.length)
     setIsAutoPlaying(false)
-  }, [])
+    // Reactivar autoplay después de 10 segundos
+    setTimeout(() => setIsAutoPlaying(true), 10000)
+  }, [isMounted])
 
   const goToImage = useCallback((index: number) => {
+    if (!isMounted) return
     setCurrentImage(index)
     setIsAutoPlaying(false)
-  }, [])
+    // Reactivar autoplay después de 10 segundos
+    setTimeout(() => setIsAutoPlaying(true), 10000)
+  }, [isMounted])
 
-  // Precargar la siguiente imagen
+  // Precargar la siguiente imagen - solo después del mount
   useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return
+    
     const nextIndex = (currentImage + 1) % carouselImages.length
     const nextImg = new window.Image()
     nextImg.src = optimizedImages[nextIndex].src
-  }, [currentImage, optimizedImages])
+  }, [currentImage, optimizedImages, isMounted])
 
   return (
     <section
-      className="py-16 lg:py-24 overflow-hidden"
+      className="py-16 lg:py-24 overflow-hidden relative"
       style={{
         background: `linear-gradient(135deg, var(--medical-neutral) 0%, var(--medical-white) 50%, var(--medical-light) 100%)`,
+        maxWidth: '100vw',
+        overflowX: 'hidden'
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
           {/* Content Section */}
           <motion.div
             initial={animationVariants.slideInLeft.initial}
             animate={animationVariants.slideInLeft.animate}
             transition={animationVariants.slideInLeft.transition}
+            className="w-full max-w-full"
           >
             {/* Badge */}
             <motion.div
@@ -171,7 +193,7 @@ export default function HeroSection() {
               initial={animationVariants.fadeInUp.initial}
               animate={animationVariants.fadeInUp.animate}
               transition={{ ...animationVariants.fadeInUp.transition, delay: 0.3, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight break-words"
               style={{ color: "var(--medical-primary)" }}
             >
               Dr. Gil Bocardo
@@ -188,7 +210,7 @@ export default function HeroSection() {
               initial={animationVariants.fadeInUp.initial}
               animate={animationVariants.fadeInUp.animate}
               transition={{ ...animationVariants.fadeInUp.transition, delay: 0.5 }}
-              className="text-lg sm:text-xl mb-8 leading-relaxed max-w-2xl"
+              className="text-lg sm:text-xl mb-8 leading-relaxed max-w-2xl break-words"
               style={{ color: "var(--medical-primary)" }}
             >
               Especialista certificado con más de 15 años de experiencia en el tratamiento de lesiones ortopédicas,
@@ -200,23 +222,23 @@ export default function HeroSection() {
               initial={animationVariants.fadeInUp.initial}
               animate={animationVariants.fadeInUp.animate}
               transition={{ ...animationVariants.fadeInUp.transition, delay: 0.7 }}
-              className="flex flex-col sm:flex-row gap-4 mb-12"
+              className="flex flex-col sm:flex-row gap-4 mb-12 w-full"
             >
-              <Link href="/citas">
+              <Link href="/citas" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   variant="medical"
-                  className="group w-full sm:w-auto"
+                  className="group w-full"
                 >
                   Agendar Consulta
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link href="tel:+525512345678">
+              <Link href="tel:+525512345678" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   variant="medical-outline"
-                  className="group w-full sm:w-auto hover:bg-medical-light"
+                  className="group w-full hover:bg-medical-light"
                   style={{
                     ['--tw-bg-opacity' as any]: '1',
                   }}
@@ -238,7 +260,7 @@ export default function HeroSection() {
               initial={animationVariants.fadeInUp.initial}
               animate={animationVariants.fadeInUp.animate}
               transition={{ ...animationVariants.fadeInUp.transition, delay: 0.9, duration: 0.8 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full"
             >
               {statsData.map((stat, index) => (
                 <motion.div
@@ -275,15 +297,15 @@ export default function HeroSection() {
             initial={animationVariants.slideInRight.initial}
             animate={animationVariants.slideInRight.animate}
             transition={animationVariants.slideInRight.transition}
-            className="relative"
+            className="relative w-full max-w-full"
           >
-            <div className="relative z-10">
+            <div className="relative z-10 w-full">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="relative overflow-hidden rounded-2xl shadow-2xl focus:outline-none"
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
+                className="relative overflow-hidden rounded-2xl shadow-2xl focus:outline-none w-full max-w-full"
+                onMouseEnter={() => isMounted && setIsAutoPlaying(false)}
+                onMouseLeave={() => isMounted && setIsAutoPlaying(true)}
                 style={{ 
                   outline: 'none',
                   border: 'none',
@@ -291,95 +313,115 @@ export default function HeroSection() {
                 }}
               >
                 {/* Contenedor cuadrado 1:1 */}
-                <div className="relative w-full aspect-square">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentImage}
-                      initial={{ opacity: 0, scale: 1.1 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.5 }}
-                      className="absolute inset-0 flex items-center justify-center"
+                <div className="relative w-full aspect-square max-w-full overflow-hidden">
+                  {/* FIJO: renderizado condicional solo después del mount para el carrusel */}
+                  {isMounted ? (
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={`carousel-${currentImage}`} // MEJORADO: key más específico
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 flex items-center justify-center w-full h-full"
+                        style={{ backgroundColor: 'var(--medical-light)' }}
+                      >
+                        <Image
+                          src={optimizedImages[currentImage].src}
+                          alt={optimizedImages[currentImage].alt}
+                          fill
+                          className="object-contain"
+                          priority={optimizedImages[currentImage].priority}
+                          placeholder="blur"
+                          blurDataURL={optimizedImages[currentImage].srcLow}
+                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
+                          style={{ 
+                            outline: 'none', 
+                            border: 'none'
+                          }}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  ) : (
+                    // Fallback estático para SSR
+                    <div 
+                      className="absolute inset-0 flex items-center justify-center w-full h-full"
                       style={{ backgroundColor: 'var(--medical-light)' }}
                     >
                       <Image
-                        src={optimizedImages[currentImage].src}
-                        alt={optimizedImages[currentImage].alt}
+                        src={optimizedImages[0].src}
+                        alt={optimizedImages[0].alt}
                         fill
-                        className="object-contain" // Cambiado de object-cover a object-contain para centrar
-                        priority={optimizedImages[currentImage].priority}
-                        placeholder="blur"
-                        blurDataURL={optimizedImages[currentImage].srcLow}
+                        className="object-contain"
+                        priority={optimizedImages[0].priority}
                         sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
                         style={{ 
                           outline: 'none', 
                           border: 'none'
                         }}
                       />
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{ 
-                          background: `linear-gradient(to top, rgba(3, 105, 161, 0.1) 0%, transparent 100%)` 
-                        }}
-                      />
-                    </motion.div>
-                  </AnimatePresence>
+                    </div>
+                  )}
                 </div>
 
-                {/* Navigation Buttons */}
-                <div className="absolute inset-0 flex items-center justify-between p-4">
-                  <button
-                    onClick={prevImage}
-                    className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                    style={{ 
-                      backgroundColor: "var(--medical-white)", 
-                      color: "var(--medical-primary)",
-                      border: 'none'
-                    }}
-                    aria-label="Imagen anterior"
-                  >
-                    <ChevronLeft className="h-6 w-6" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                    style={{ 
-                      backgroundColor: "var(--medical-white)", 
-                      color: "var(--medical-primary)",
-                      border: 'none'
-                    }}
-                    aria-label="Siguiente imagen"
-                  >
-                    <ChevronRight className="h-6 w-6" />
-                  </button>
-                </div>
-
-                {/* Indicators */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                  {optimizedImages.map((_, index) => (
+                {/* Navigation Buttons - Solo mostrar después del mount */}
+                {isMounted && (
+                  <div className="absolute inset-0 flex items-center justify-between p-4">
                     <button
-                      key={`indicator-${index}`}
-                      onClick={() => goToImage(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                        index === currentImage ? "scale-125" : "opacity-60 hover:opacity-80"
-                      }`}
+                      onClick={prevImage}
+                      className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
                       style={{ 
-                        backgroundColor: "var(--medical-white)",
+                        backgroundColor: "var(--medical-white)", 
+                        color: "var(--medical-primary)",
                         border: 'none'
                       }}
-                      aria-label={`Ir a imagen ${index + 1}`}
-                    />
-                  ))}
-                </div>
+                      aria-label="Imagen anterior"
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                      style={{ 
+                        backgroundColor: "var(--medical-white)", 
+                        color: "var(--medical-primary)",
+                        border: 'none'
+                      }}
+                      aria-label="Siguiente imagen"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Indicators - Solo mostrar después del mount */}
+                {isMounted && (
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {optimizedImages.map((_, index) => (
+                      <button
+                        key={`indicator-${index}`}
+                        onClick={() => goToImage(index)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                          index === currentImage ? "scale-125" : "opacity-60 hover:opacity-80"
+                        }`}
+                        style={{ 
+                          backgroundColor: "var(--medical-white)",
+                          border: 'none'
+                        }}
+                        aria-label={`Ir a imagen ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </motion.div>
             </div>
 
-            {/* Background Decorations */}
+            {/* Background Decorations - Posicionamiento mejorado */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.8 }}
-              className="absolute -bottom-6 -right-6 w-full h-full rounded-2xl -z-10 shadow-xl"
+              className="absolute -bottom-6 -right-6 w-[calc(100%-12px)] h-[calc(100%-12px)] rounded-2xl -z-10 shadow-xl max-w-full"
               style={{
                 background: `linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-secondary) 100%)`,
               }}

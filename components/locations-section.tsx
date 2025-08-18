@@ -31,8 +31,8 @@ const locations: Location[] = [
 
 export default function LocationsSection() {
   return (
-    <section className="py-16 lg:py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 lg:py-20 bg-white overflow-hidden"> {/* Agregado overflow-hidden */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -41,7 +41,7 @@ export default function LocationsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-4" style={{ color: "var(--medical-primary)" }}>
+          <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-4 break-words" style={{ color: "var(--medical-primary)" }}>
             Ubicaciones
           </h2>
         </motion.div>
@@ -52,7 +52,7 @@ export default function LocationsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid md:grid-cols-2 gap-8 lg:gap-12"
+          className="grid md:grid-cols-2 gap-8 lg:gap-12 w-full"
         >
           {locations.map((location, index) => (
             <motion.div
@@ -61,10 +61,10 @@ export default function LocationsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-              className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 w-full max-w-full"
             >
               {/* Map Container */}
-              <div className="h-64 bg-gray-100 relative">
+              <div className="h-64 bg-gray-100 relative overflow-hidden">
                 <iframe
                   src={location.mapSrc}
                   width="100%"
@@ -89,14 +89,14 @@ export default function LocationsSection() {
               </div>
 
               {/* Card Footer - Solo información */}
-              <div className="p-6" style={{ backgroundColor: 'var(--medical-light)' }}>
-                <h4 className="font-bold text-lg mb-2" style={{ color: 'var(--medical-primary)' }}>
+              <div className="p-6 w-full" style={{ backgroundColor: 'var(--medical-light)' }}>
+                <h4 className="font-bold text-lg mb-2 break-words" style={{ color: 'var(--medical-primary)' }}>
                   {location.name}
                 </h4>
-                <p className="text-sm mb-1" style={{ color: 'var(--medical-secondary)' }}>
+                <p className="text-sm mb-1 break-words" style={{ color: 'var(--medical-secondary)' }}>
                   {location.address}
                 </p>
-                <p className="text-sm font-medium" style={{ color: 'var(--medical-secondary)' }}>
+                <p className="text-sm font-medium break-words" style={{ color: 'var(--medical-secondary)' }}>
                   {location.days}
                 </p>
               </div>
@@ -110,23 +110,23 @@ export default function LocationsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-16 p-8 rounded-2xl"
+          className="text-center mt-16 p-8 rounded-2xl w-full max-w-full"
           style={{ 
             backgroundColor: "var(--medical-neutral)",
             border: "2px solid var(--medical-light)"
           }}
         >
-          <h3 className="text-2xl font-serif font-bold mb-4" style={{ color: "var(--medical-primary)" }}>
+          <h3 className="text-2xl font-serif font-bold mb-4 break-words" style={{ color: "var(--medical-primary)" }}>
             ¿Listo para agendar tu consulta?
           </h3>
-          <p className="text-lg mb-6 max-w-2xl mx-auto" style={{ color: "var(--medical-secondary)" }}>
+          <p className="text-lg mb-6 max-w-2xl mx-auto break-words" style={{ color: "var(--medical-secondary)" }}>
             Nuestro equipo está disponible para atenderte en cualquiera de nuestras ubicaciones. 
             Contáctanos para programar tu cita.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
             <Link
               href="#contacto"
-              className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+              className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 w-full sm:w-auto"
               style={{
                 backgroundColor: "var(--medical-primary)",
                 color: "var(--medical-white)"
@@ -136,7 +136,7 @@ export default function LocationsSection() {
             </Link>
             <a
               href="tel:+525512345678"
-              className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2"
+              className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2 w-full sm:w-auto"
               style={{
                 borderColor: "var(--medical-primary)",
                 color: "var(--medical-primary)",

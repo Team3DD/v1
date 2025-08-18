@@ -3,8 +3,9 @@
 import Link from "next/link"
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, ArrowUp, MessageCircle, AlertCircle } from "lucide-react"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
 
-// Definición de tipos
+// Types
 interface Doctor {
   name: string
   email: string
@@ -43,7 +44,7 @@ interface FooterConfig {
   socialMedia: SocialMedia[]
 }
 
-// Configuración de datos del footer
+// Constants
 const FOOTER_CONFIG: FooterConfig = {
   doctor: {
     name: "Dr. Gil Bocardo",
@@ -97,165 +98,156 @@ const FOOTER_CONFIG: FooterConfig = {
   ]
 }
 
-// Separador vertical
+const HOURS_INFO = [
+  { icon: Clock, text: "Lun-Vie: 17:00-20:00" },
+  { icon: Clock, text: "2 consultorios disponibles" },
+  { icon: Clock, text: "Urgencias: 24/7" }
+]
+
+// Utility functions
+const getPhoneHref = (type: string, number: string) => 
+  type === 'whatsapp' ? `https://wa.me/52${number}` : `tel:${number}`
+
+// Shared Components
+const MotionDiv = ({ children, delay = 0, className = "" }: {
+  children: React.ReactNode
+  delay?: number
+  className?: string
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.6, delay }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+)
+
+const SectionTitle = ({ icon: Icon, title, className = "" }: {
+  icon?: React.ComponentType<any>
+  title: string
+  className?: string
+}) => (
+  <div className={`flex items-center space-x-2 mb-4 ${className}`}>
+    {Icon && <Icon className="h-5 w-5" style={{ color: "var(--medical-light)" }} />}
+    <h3 className="text-lg font-semibold text-white">{title}</h3>
+  </div>
+)
+
 const VerticalSeparator = () => (
   <div className="hidden lg:block absolute right-0 top-4 bottom-4 w-px">
     <div className="h-full bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
   </div>
 )
 
-// Componente del nombre del doctor (alineado a la izquierda)
-const DoctorHeader = ({ doctorName }: { doctorName: string }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="col-span-full mb-4"
-  >
-    <h2 className="text-3xl font-serif font-bold text-left" style={{ color: "var(--medical-light)" }}>
-      {doctorName}
-    </h2>
-  </motion.div>
+const ListItem = ({ href, children }: { href: string, children: React.ReactNode }) => (
+  <li className="flex items-center space-x-2">
+    <span className="text-gray-400">•</span>
+    <Link
+      href={href}
+      className="text-gray-300 hover:text-white transition-all duration-200 hover:translate-x-1 text-sm break-words min-w-0"
+    >
+      {children}
+    </Link>
+  </li>
 )
 
-// Componente de contacto
+// Main Components
+const DoctorHeader = ({ doctorName }: { doctorName: string }) => (
+  <MotionDiv className="col-span-full mb-2">
+    <h2 className="text-3xl font-serif font-bold text-left break-words" style={{ color: "var(--medical-light)" }}>
+      {doctorName}
+    </h2>
+  </MotionDiv>
+)
+
 const ContactSection = ({ phoneContacts, email }: { 
   phoneContacts: PhoneContact[]
   email: string
 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.1 }}
-    className="relative"
-  >
+  <MotionDiv delay={0.1} className="relative w-full min-w-0">
     <h3 className="text-lg font-semibold mb-4 text-white">Contacto</h3>
     
-    {/* Teléfonos */}
-    <div className="mb-6">
-      <h4 className="text-sm font-medium mb-3 text-white">Teléfonos</h4>
+    {/* Teléfonos - sin subtítulo ni iconos individuales */}
+    <div className="mb-4">
       <div className="space-y-2">
-        {phoneContacts.map((contact, index) => (
-          <div key={index} className="flex items-center space-x-3">
-            {contact.type === 'whatsapp' ? (
-              <MessageCircle className="h-4 w-4 flex-shrink-0 text-green-400" />
-            ) : contact.type === 'emergency' ? (
-              <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
-            ) : (
-              <Phone className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
-            )}
-            <div>
-              <p className="text-gray-300 text-xs">{contact.label}</p>
+        {phoneContacts.map((contact, index) => {
+          const getNumberColor = () => {
+            switch (contact.type) {
+              case 'whatsapp': return 'text-green-400 hover:text-green-300'
+              case 'emergency': return 'text-red-400 hover:text-red-300'
+              default: return 'text-white hover:text-gray-300'
+            }
+          }
+
+          return (
+            <div key={index}>
+              <p className="text-gray-300 text-xs truncate">{contact.label}</p>
               <Link 
-                href={contact.type === 'whatsapp' ? `https://wa.me/52${contact.number}` : `tel:${contact.number}`}
-                className="text-white text-sm hover:text-gray-300 transition-colors"
+                href={getPhoneHref(contact.type, contact.number)}
+                className={`${getNumberColor()} text-sm transition-colors block`}
               >
                 {contact.number}
               </Link>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
 
-    {/* Email */}
+    {/* Email - con label como los teléfonos */}
     <div>
-      <h4 className="text-sm font-medium mb-3 text-white">Email</h4>
-      <div className="flex items-center space-x-3">
-        <Mail className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
-        <Link
-          href={`mailto:${email}`}
-          className="text-gray-300 hover:text-white transition-colors text-sm break-all"
-        >
-          {email}
-        </Link>
-      </div>
+      <p className="text-gray-300 text-xs">Email</p>
+      <Link 
+        href={`mailto:${email}`} 
+        className="text-gray-300 hover:text-white transition-colors text-sm block break-all leading-relaxed"
+      >
+        {email}
+      </Link>
     </div>
 
     <VerticalSeparator />
-  </motion.div>
+  </MotionDiv>
 )
 
-// Componente de servicios
 const ServicesSection = ({ services }: { services: string[] }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.2 }}
-    className="relative"
-  >
+  <MotionDiv delay={0.2} className="relative w-full min-w-0">
     <h3 className="text-lg font-semibold mb-4 text-white">Servicios</h3>
     <ul className="space-y-2">
       {services.map((service, index) => (
-        <li key={index} className="flex items-center space-x-2">
-          <span className="text-gray-400">•</span>
-          <Link
-            href="#servicios"
-            className="text-gray-300 hover:text-white transition-all duration-200 hover:translate-x-1 text-sm"
-          >
-            {service}
-          </Link>
-        </li>
+        <ListItem key={index} href="#servicios">{service}</ListItem>
       ))}
     </ul>
     <VerticalSeparator />
-  </motion.div>
+  </MotionDiv>
 )
 
-// Componente de enlaces rápidos
 const QuickLinksSection = ({ links }: { links: QuickLink[] }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.3 }}
-    className="relative"
-  >
+  <MotionDiv delay={0.3} className="relative w-full min-w-0">
     <h3 className="text-lg font-semibold mb-4 text-white">Enlaces Rápidos</h3>
     <ul className="space-y-2">
       {links.map((link, index) => (
-        <li key={index} className="flex items-center space-x-2">
-          <span className="text-gray-400">•</span>
-          <Link
-            href={link.href}
-            className="text-gray-300 hover:text-white transition-all duration-200 hover:translate-x-1 text-sm"
-          >
-            {link.name}
-          </Link>
-        </li>
+        <ListItem key={index} href={link.href}>{link.name}</ListItem>
       ))}
     </ul>
     <VerticalSeparator />
-  </motion.div>
+  </MotionDiv>
 )
 
-// Componente de horarios y redes sociales
 const HoursAndSocialSection = ({ socialMedia }: { socialMedia: SocialMedia[] }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.4 }}
-  >
+  <MotionDiv delay={0.4} className="w-full min-w-0">
     {/* Horarios */}
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-4 text-white">Horarios</h3>
+      <SectionTitle icon={Clock} title="Horarios" />
       <div className="space-y-3">
-        <div className="flex items-center space-x-3">
-          <Clock className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
-          <span className="text-gray-300 text-sm">Lun-Vie: 17:00-20:00</span>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Clock className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
-          <span className="text-gray-300 text-sm">2 consultorios disponibles</span>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Clock className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
-          <span className="text-gray-300 text-sm">Urgencias: 24/7</span>
-        </div>
+        {HOURS_INFO.map((hour, index) => (
+          <div key={index} className="flex items-center space-x-3">
+            <hour.icon className="h-4 w-4 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
+            <span className="text-gray-300 text-sm">{hour.text}</span>
+          </div>
+        ))}
       </div>
     </div>
 
@@ -277,17 +269,16 @@ const HoursAndSocialSection = ({ socialMedia }: { socialMedia: SocialMedia[] }) 
         ))}
       </div>
     </div>
-  </motion.div>
+  </MotionDiv>
 )
 
-// Separador degradado horizontal
 const GradientSeparator = () => (
   <motion.div
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
     viewport={{ once: true }}
     transition={{ duration: 0.8, delay: 0.5 }}
-    className="col-span-full my-8"
+    className="col-span-full my-4"
   >
     <div className="relative h-px">
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
@@ -295,17 +286,10 @@ const GradientSeparator = () => (
   </motion.div>
 )
 
-// Componente de ubicaciones
 const LocationsSection = ({ locations }: { locations: Location[] }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.6 }}
-    className="col-span-full"
-  >
+  <MotionDiv delay={0.6} className="col-span-full">
     <h3 className="text-lg font-semibold mb-6 text-white text-center">Ubicaciones</h3>
-    <div className="grid md:grid-cols-2 gap-8">
+    <div className="grid md:grid-cols-2 gap-4">
       {locations.map((location, index) => (
         <Link 
           key={index} 
@@ -313,92 +297,106 @@ const LocationsSection = ({ locations }: { locations: Location[] }) => (
           className="text-center block transition-all duration-300 hover:scale-105 hover:bg-white/5 p-4 rounded-lg"
         >
           <div className="flex items-center justify-center space-x-2 mb-3">
-            <MapPin className="h-5 w-5" style={{ color: "var(--medical-light)" }} />
-            <h4 className="text-white font-medium text-lg">{location.name}</h4>
+            <MapPin className="h-5 w-5 flex-shrink-0" style={{ color: "var(--medical-light)" }} />
+            <h4 className="text-white font-medium text-lg break-words">{location.name}</h4>
           </div>
-          <p className="text-gray-300 text-sm mb-2">{location.address}</p>
+          <p className="text-gray-300 text-sm mb-2 break-words">{location.address}</p>
           <p className="text-gray-400 text-xs">{location.days}</p>
         </Link>
       ))}
     </div>
-  </motion.div>
+  </MotionDiv>
 )
 
-// Componente del footer bottom
-const FooterBottom = () => {
-  // Usamos un año fijo para evitar hydration mismatch
-  const currentYear = 2025;
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.7 }}
-      className="col-span-full border-t border-white/20 mt-8 pt-6"
-    >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <p className="text-gray-300 text-sm mb-3 md:mb-0 max-w-md">
-          Protegemos su privacidad y datos personales conforme a la normativa vigente.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/terminos-servicio" className="text-gray-300 hover:text-white text-sm transition-colors">
-            Términos de Servicio
-          </Link>
-          <Link href="/politica-privacidad" className="text-gray-300 hover:text-white text-sm transition-colors">
-            Política de Privacidad
-          </Link>
-        </div>
+const FooterBottom = () => (
+  <MotionDiv delay={0.7} className="col-span-full border-t border-white/20 mt-4 pt-6">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+      <p className="text-gray-300 text-sm mb-3 md:mb-0 max-w-md break-words">
+        Protegemos su privacidad y datos personales conforme a la normativa vigente.
+      </p>
+      <div className="flex flex-wrap gap-4">
+        <Link href="/terminos-servicio" className="text-gray-300 hover:text-white text-sm transition-colors break-words">
+          Términos de Servicio
+        </Link>
+        <Link href="/politica-privacidad" className="text-gray-300 hover:text-white text-sm transition-colors break-words">
+          Política de Privacidad
+        </Link>
       </div>
+    </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-        <p className="text-gray-400 text-sm mb-2 md:mb-0">
-          © {currentYear} Dr. Gil Bocardo. Todos los derechos reservados.
-        </p>
-        <p className="text-gray-400 text-sm">
-          by{" "}
-          <span className="text-red-500 hover:text-sky-400 transition-colors cursor-pointer font-medium">
-            team 3
-          </span>
-        </p>
-      </div>
-    </motion.div>
-  )
-}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <p className="text-gray-400 text-sm mb-2 md:mb-0 break-words">
+        by{" "}
+        <span className="text-red-500 hover:text-sky-400 transition-colors cursor-pointer font-medium">
+          team 3
+        </span>
+      </p>
+      <p className="text-gray-400 text-sm">
+        © 2025 Dr. Gil Bocardo. Todos los derechos reservados.
+      </p>
+    </div>
+  </MotionDiv>
+)
 
-// Botón scroll to top
 const ScrollToTopButton = () => {
-  const scrollToTop = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: "smooth" })
+  const [showButton, setShowButton] = useState(false)
+  const [isScrolling, setIsScrolling] = useState(false)
+  
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout
+
+    const handleScroll = () => {
+      if (typeof window === 'undefined') return
+      
+      const shouldShow = window.pageYOffset > 300
+      setShowButton(shouldShow)
+      setIsScrolling(true)
+      
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => setIsScrolling(false), 2000)
     }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll)
+      return () => {
+        window.removeEventListener('scroll', handleScroll)
+        clearTimeout(scrollTimeout)
+      }
+    }
+  }, [])
+  
+  const scrollToTop = () => {
+    window?.scrollTo({ top: 0, behavior: "smooth" })
   }
+
+  if (!showButton || !isScrolling) return null
 
   return (
     <motion.button 
       onClick={scrollToTop} 
-      className="scroll-to-top" 
+      className="fixed bottom-8 right-8 p-3 rounded-full shadow-lg z-50 transition-all duration-300 hover:scale-110"
+      style={{ backgroundColor: "var(--medical-white)", color: "var(--medical-primary)" }}
       whileHover={{ y: -2 }} 
       whileTap={{ scale: 0.95 }}
-      suppressHydrationWarning={true}
     >
       <ArrowUp className="h-5 w-5" />
     </motion.button>
   )
 }
 
-// Componente principal del Footer
+// Main Component
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: "var(--medical-primary)" }} className="text-white relative">
+    <footer 
+      style={{ backgroundColor: "var(--medical-primary)" }} 
+      className="text-white relative overflow-hidden"
+    >
       <ScrollToTopButton />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Fila 1: Dr. Gil Bocardo (alineado a la izquierda) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-4 w-full">
           <DoctorHeader doctorName={FOOTER_CONFIG.doctor.name} />
           
-          {/* Fila 2: 4 columnas con separadores verticales */}
           <ContactSection 
             phoneContacts={FOOTER_CONFIG.phoneContacts}
             email={FOOTER_CONFIG.doctor.email}
@@ -407,13 +405,10 @@ export default function Footer() {
           <QuickLinksSection links={FOOTER_CONFIG.quickLinks} />
           <HoursAndSocialSection socialMedia={FOOTER_CONFIG.socialMedia} />
           
-          {/* Separador degradado */}
           <GradientSeparator />
           
-          {/* Fila 3: Ubicaciones */}
           <LocationsSection locations={FOOTER_CONFIG.locations} />
           
-          {/* Footer bottom */}
           <FooterBottom />
         </div>
       </div>

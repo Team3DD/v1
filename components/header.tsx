@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Phone, MapPin } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 // Configuración de Cloudinary
 const CLOUDINARY_CONFIG = {
@@ -37,13 +37,6 @@ const navigationLinks = [
   { href: "/contacto", label: "Contacto" }
 ]
 
-// Datos de contacto
-const contactInfo = {
-  phone: "+52 (55) 1234-5678",
-  location: "Ciudad Satélite, Naucalpan",
-  hours: "Horarios: Lun-Vie 9:00-18:00 | Sáb 9:00-14:00"
-}
-
 // Tipos para el componente NavLink
 interface NavLinkProps {
   href: string;
@@ -62,9 +55,10 @@ export default function Header() {
     lowQuality: generateCloudinaryUrl("DRGILlogo_r2bbeq.png", ["c_fit,w_60,h_20", "q_auto:low"])
   }), [])
 
-  // Manejo del scroll optimizado
+  // Manejo del scroll optimizado con threshold más suave
   const handleScroll = useCallback(() => {
-    setIsScrolled(window.scrollY > 0)
+    const scrollY = window.scrollY
+    setIsScrolled(scrollY > 50) // Mayor threshold para evitar cambios bruscos
   }, [])
 
   useEffect(() => {
@@ -87,7 +81,7 @@ export default function Header() {
     <Link
       href={href}
       onClick={handleLinkClick}
-      className={`text-gray-700 transition-colors duration-200 hover:text-[var(--medical-secondary)] ${
+      className={`text-gray-700 transition-colors duration-300 hover:text-[var(--medical-secondary)] ${
         isMobile ? "text-base py-2" : ""
       }`}
     >
@@ -97,43 +91,24 @@ export default function Header() {
 
   return (
     <>
-      {/* Top Bar */}
-      <div
-        className={`text-white py-2 transition-all duration-300 ${
-          isScrolled ? "opacity-0 -translate-y-full pointer-events-none" : "opacity-100 translate-y-0"
-        }`}
-        style={{ backgroundColor: "var(--medical-primary)" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center text-sm">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <Phone className="h-4 w-4" />
-                <span className="hidden xs:inline">{contactInfo.phone}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <MapPin className="h-4 w-4" />
-                <span className="hidden sm:inline">{contactInfo.location}</span>
-              </div>
-            </div>
-            <div className="hidden lg:block">
-              <span>{contactInfo.hours}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Header */}
+      {/* Main Header - Sticky */}
       <header
-        className={`transition-all duration-300 border-b ${
+        className={`sticky top-0 z-50 transition-all duration-500 ease-out border-b ${
           isScrolled 
-            ? "fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-lg" 
+            ? "bg-white/95 backdrop-blur-lg shadow-lg transform translate-y-0" 
             : "bg-white shadow-sm"
         }`}
-        style={{ borderColor: "var(--medical-light)" }}
+        style={{ 
+          borderColor: "var(--medical-light)",
+          // Transición suave para evitar el efecto rebote
+          transform: isScrolled ? 'translateY(0)' : 'translateY(0)',
+          willChange: 'transform, background-color, box-shadow'
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3 sm:py-4 w-full">
+          <div className={`flex items-center justify-between w-full transition-all duration-500 ease-out ${
+            isScrolled ? "py-2 sm:py-3" : "py-3 sm:py-4"
+          }`}>
             {/* Sección Izquierda: Logo + Texto */}
             <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
               {/* Logo y Marca */}
@@ -144,7 +119,11 @@ export default function Header() {
               >
                 {/* Contenedor del Logo */}
                 <div className="relative flex-shrink-0">
-                  <div className="relative w-16 h-10 sm:w-20 sm:h-12 lg:w-28 lg:h-16 rounded overflow-hidden bg-transparent">
+                  <div className={`relative rounded overflow-hidden bg-transparent transition-all duration-500 ease-out ${
+                    isScrolled 
+                      ? "w-12 h-8 sm:w-14 sm:h-9 md:w-16 md:h-10" 
+                      : "w-14 h-9 sm:w-16 sm:h-10 md:w-20 md:h-12 lg:w-28 lg:h-16"
+                  }`}>
                     <Image
                       src={logoUrls.small}
                       alt="Dr. Gil Bocardo Logo"
@@ -161,13 +140,21 @@ export default function Header() {
                 {/* Texto de la Marca */}
                 <div className="flex flex-col">
                   <span 
-                    className="text-xl sm:text-2xl font-serif font-bold leading-tight group-hover:text-[var(--medical-secondary)] transition-colors duration-200" 
+                    className={`font-serif font-bold leading-tight group-hover:text-[var(--medical-secondary)] transition-all duration-500 ease-out ${
+                      isScrolled 
+                        ? "text-base sm:text-lg" 
+                        : "text-lg sm:text-xl md:text-2xl"
+                    }`}
                     style={{ color: "var(--medical-primary)" }}
                   >
                     Dr. Gil Bocardo
                   </span>
                   <span 
-                    className="text-xs sm:text-sm hidden sm:block leading-tight" 
+                    className={`hidden sm:block md:hidden lg:block leading-tight transition-all duration-500 ease-out ${
+                      isScrolled 
+                        ? "text-xs opacity-90" 
+                        : "text-xs lg:text-sm opacity-100"
+                    }`}
                     style={{ color: "var(--medical-secondary)" }}
                   >
                     Ortopedia y Traumatología
@@ -178,52 +165,49 @@ export default function Header() {
 
             {/* Sección Derecha: Navegación */}
             <div className="flex items-center">
-              {/* Navegación Desktop */}
-              <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+              {/* Navegación Desktop (solo pantallas grandes) */}
+              <nav className="hidden xl:flex items-center space-x-6 xl:space-x-8">
                 {navigationLinks.map((link) => (
                   <NavLink key={link.href} href={link.href}>
                     {link.label}
                   </NavLink>
                 ))}
                 <Link href="/citas">
-                  <Button className="btn-medical transition-all duration-200 hover:scale-105">
+                  <Button className={`btn-medical transition-all duration-300 hover:scale-105 ${
+                    isScrolled ? "px-4 py-2 text-sm" : ""
+                  }`}>
                     Agendar Cita
                   </Button>
                 </Link>
               </nav>
 
-              {/* Navegación Tablet */}
-              <nav className="hidden md:flex lg:hidden items-center space-x-4">
-                <Link href="/citas">
-                  <Button size="sm" className="btn-medical">
-                    Cita
-                  </Button>
-                </Link>
+              {/* Navegación Tablet y Mobile - Botón Cita + Menú */}
+              <nav className="flex xl:hidden items-center space-x-3">
+                {/* Botón Cita (oculto en pantallas muy pequeñas) */}
+                <div className="hidden xs:block">
+                  <Link href="/citas">
+                    <Button size="sm" className="btn-medical text-xs px-3 py-2">
+                      Cita
+                    </Button>
+                  </Link>
+                </div>
+                
+                {/* Botón Menú Hamburguesa */}
                 <button
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-300"
                   onClick={toggleMobileMenu}
                   style={{ color: "var(--medical-primary)" }}
-                  aria-label="Abrir menú"
+                  aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
                 >
                   {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
               </nav>
-
-              {/* Botón Menú Móvil */}
-              <button
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                onClick={toggleMobileMenu}
-                style={{ color: "var(--medical-primary)" }}
-                aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-              >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
             </div>
           </div>
 
-          {/* Menú Móvil */}
+          {/* Menú Móvil/Tablet */}
           <div 
-            className={`md:hidden transition-all duration-300 border-t overflow-hidden ${
+            className={`xl:hidden transition-all duration-500 ease-out border-t overflow-hidden ${
               isMenuOpen 
                 ? "max-h-96 opacity-100 py-4" 
                 : "max-h-0 opacity-0 py-0"
@@ -238,7 +222,7 @@ export default function Header() {
               ))}
               <div className="pt-3 border-t" style={{ borderColor: "var(--medical-light)" }}>
                 <Link href="/citas" onClick={handleLinkClick}>
-                  <Button className="btn-medical w-full sm:w-fit">
+                  <Button className="btn-medical w-full">
                     Agendar Cita
                   </Button>
                 </Link>
@@ -247,14 +231,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
-      {/* Espaciador para Header Fixed */}
-      <div 
-        className={`transition-all duration-300 ${
-          isScrolled ? "h-16 sm:h-18 lg:h-20" : "h-0"
-        }`}
-        aria-hidden="true"
-      />
     </>
   )
 }

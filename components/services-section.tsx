@@ -5,9 +5,20 @@ import { Bone, Activity, Stethoscope, Zap, Heart, Shield, ArrowRight, X } from "
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-const services = [
+// Definir el tipo para los servicios
+type Service = {
+  icon: React.ComponentType<any>
+  title: string
+  description: string
+  fullDescription: string
+  features: string[]
+  procedures: string[]
+  benefits: string[]
+}
+
+const services: Service[] = [
   {
     icon: Bone,
     title: "Cirugía Ortopédica",
@@ -142,13 +153,12 @@ const services = [
   },
 ]
 
+// Animaciones optimizadas
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
+    transition: { staggerChildren: 0.08 },
   },
 }
 
@@ -157,82 +167,122 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.5,
-    },
+    transition: { duration: 0.4 },
   },
 }
 
 export default function ServicesSection() {
-  const [selectedService, setSelectedService] = useState<(typeof services)[0] | null>(null)
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detectar dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (selectedService) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [selectedService])
+
+  const closeModal = () => setSelectedService(null)
 
   return (
-    <section id="servicios" className="py-16 lg:py-24" style={{ backgroundColor: "var(--medical-white)" }}>
+    <section 
+      id="servicios" 
+      className="py-12 sm:py-16 lg:py-24" 
+      style={{ backgroundColor: "var(--medical-white)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header con tipografía responsive */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 lg:mb-16"
         >
-          <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-4" style={{ color: "var(--medical-primary)" }}>
+          <h2 
+            className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold mb-3 sm:mb-4" 
+            style={{ color: "var(--medical-primary)" }}
+          >
             Servicios Especializados
           </h2>
-          <p className="text-xl max-w-3xl mx-auto" style={{ color: "var(--medical-secondary)" }}>
+          <p 
+            className="text-base sm:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed px-2" 
+            style={{ color: "var(--medical-secondary)" }}
+          >
             Ofrezco una amplia gama de servicios ortopédicos con tecnología de vanguardia y un enfoque personalizado
             para cada paciente.
           </p>
         </motion.div>
 
+        {/* Grid de servicios responsive */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
         >
           {services.map((service, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Card
-                className="group hover:shadow-xl transition-all duration-500 h-full hover:-translate-y-2 cursor-pointer border-2"
+                className="group hover:shadow-xl transition-all duration-500 h-full hover:-translate-y-1 sm:hover:-translate-y-2 cursor-pointer border-2"
                 style={{
                   borderColor: "var(--medical-light)",
                   backgroundColor: "var(--medical-white)",
                 }}
                 onClick={() => setSelectedService(service)}
               >
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <div
-                      className="p-3 rounded-lg transition-colors duration-300"
+                      className="p-2 sm:p-3 rounded-lg transition-colors duration-300"
                       style={{ backgroundColor: "var(--medical-light)" }}
                     >
-                      <service.icon className="h-6 w-6" style={{ color: "var(--medical-primary)" }} />
+                      <service.icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: "var(--medical-primary)" }} />
                     </div>
                     <ArrowRight
-                      className="h-5 w-5 group-hover:translate-x-1 transition-all duration-300"
+                      className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-all duration-300"
                       style={{ color: "var(--medical-secondary)" }}
                     />
                   </div>
                   <CardTitle
-                    className="text-xl font-semibold group-hover:text-blue-900 transition-colors"
+                    className="text-lg sm:text-xl font-semibold group-hover:text-blue-900 transition-colors leading-tight"
                     style={{ color: "var(--medical-primary)" }}
                   >
                     {service.title}
                   </CardTitle>
-                  <CardDescription className="leading-relaxed" style={{ color: "var(--medical-secondary)" }}>
+                  <CardDescription 
+                    className="leading-relaxed text-sm sm:text-base" 
+                    style={{ color: "var(--medical-secondary)" }}
+                  >
                     {service.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
+                <CardContent className="pt-0">
+                  <ul className="space-y-2 sm:space-y-3">
                     {service.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center text-sm">
+                      <li key={featureIndex} className="flex items-center text-xs sm:text-sm">
                         <div
-                          className="w-2 h-2 rounded-full mr-3 flex-shrink-0"
+                          className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 flex-shrink-0"
                           style={{ backgroundColor: "var(--medical-secondary)" }}
-                        ></div>
+                        />
                         <span style={{ color: "var(--medical-primary)" }}>{feature}</span>
                       </li>
                     ))}
@@ -243,104 +293,146 @@ export default function ServicesSection() {
           ))}
         </motion.div>
 
+        {/* Botón principal */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-12"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-center mt-8 sm:mt-12"
         >
           <Link href="/citas">
-            <Button size="lg" className="btn-medical hover:scale-105 transition-all duration-300 hover:shadow-lg">
+            <Button 
+              size={isMobile ? "default" : "lg"} 
+              className="btn-medical hover:scale-105 transition-all duration-300 hover:shadow-lg text-sm sm:text-base px-6 sm:px-8"
+            >
               Agendar Consulta
             </Button>
           </Link>
         </motion.div>
       </div>
 
+      {/* Modal optimizado */}
       <AnimatePresence>
         {selectedService && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
             style={{ backgroundColor: "rgba(47, 65, 86, 0.8)", backdropFilter: "blur(8px)" }}
-            onClick={() => setSelectedService(null)}
+            onClick={closeModal}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl shadow-2xl"
               style={{ backgroundColor: "var(--medical-white)" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
+              <div className="p-4 sm:p-6 lg:p-8">
+                {/* Header del modal */}
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
                   <div className="flex items-center">
-                    <div className="p-3 rounded-lg mr-4" style={{ backgroundColor: "var(--medical-light)" }}>
-                      <selectedService.icon className="h-8 w-8" style={{ color: "var(--medical-primary)" }} />
+                    <div 
+                      className="p-2 sm:p-3 rounded-lg mr-3 sm:mr-4" 
+                      style={{ backgroundColor: "var(--medical-light)" }}
+                    >
+                      <selectedService.icon 
+                        className="h-6 w-6 sm:h-8 sm:w-8" 
+                        style={{ color: "var(--medical-primary)" }} 
+                      />
                     </div>
-                    <h2 className="text-3xl font-serif font-bold" style={{ color: "var(--medical-primary)" }}>
+                    <h2 
+                      className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold leading-tight" 
+                      style={{ color: "var(--medical-primary)" }}
+                    >
                       {selectedService.title}
                     </h2>
                   </div>
                   <button
-                    onClick={() => setSelectedService(null)}
-                    className="p-2 rounded-full transition-colors duration-200"
+                    onClick={closeModal}
+                    className="p-1.5 sm:p-2 rounded-full transition-colors duration-200 hover:bg-opacity-80"
                     style={{ backgroundColor: "var(--medical-light)", color: "var(--medical-primary)" }}
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5 sm:h-6 sm:w-6" />
                   </button>
                 </div>
 
-                <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--medical-secondary)" }}>
+                {/* Descripción */}
+                <p 
+                  className="text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed" 
+                  style={{ color: "var(--medical-secondary)" }}
+                >
                   {selectedService.fullDescription}
                 </p>
 
-                <div className="grid md:grid-cols-2 gap-8">
+                {/* Contenido en columnas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                  {/* Procedimientos */}
                   <div>
-                    <h3 className="text-xl font-semibold mb-4" style={{ color: "var(--medical-primary)" }}>
+                    <h3 
+                      className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4" 
+                      style={{ color: "var(--medical-primary)" }}
+                    >
                       Procedimientos
                     </h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2 sm:space-y-3">
                       {selectedService.procedures.map((procedure, index) => (
                         <li key={index} className="flex items-start">
                           <div
-                            className="w-2 h-2 rounded-full mr-3 mt-2 flex-shrink-0"
+                            className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"
                             style={{ backgroundColor: "var(--medical-secondary)" }}
-                          ></div>
-                          <span style={{ color: "var(--medical-primary)" }}>{procedure}</span>
+                          />
+                          <span 
+                            className="text-sm sm:text-base leading-relaxed" 
+                            style={{ color: "var(--medical-primary)" }}
+                          >
+                            {procedure}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
+                  {/* Beneficios */}
                   <div>
-                    <h3 className="text-xl font-semibold mb-4" style={{ color: "var(--medical-primary)" }}>
+                    <h3 
+                      className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4" 
+                      style={{ color: "var(--medical-primary)" }}
+                    >
                       Beneficios
                     </h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2 sm:space-y-3">
                       {selectedService.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start">
                           <div
-                            className="w-2 h-2 rounded-full mr-3 mt-2 flex-shrink-0"
+                            className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"
                             style={{ backgroundColor: "var(--medical-secondary)" }}
-                          ></div>
-                          <span style={{ color: "var(--medical-primary)" }}>{benefit}</span>
+                          />
+                          <span 
+                            className="text-sm sm:text-base leading-relaxed" 
+                            style={{ color: "var(--medical-primary)" }}
+                          >
+                            {benefit}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
 
-                <div className="mt-8 text-center">
+                {/* Solo botón de agendar consulta */}
+                <div className="mt-6 sm:mt-8 text-center">
                   <Link href="/citas">
-                    <Button className="btn-medical mr-4">Agendar Consulta</Button>
-                  </Link>
-                  <Link href="/contacto">
-                    <Button className="btn-medical-outline">Más Información</Button>
+                    <Button 
+                      className="btn-medical w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8"
+                      size={isMobile ? "default" : "lg"}
+                    >
+                      Agendar Consulta
+                    </Button>
                   </Link>
                 </div>
               </div>
