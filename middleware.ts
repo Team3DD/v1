@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Fecha de activación del middleware
+const ACTIVATION_DATE = new Date('2025-08-31T00:00:00Z'); // Ayer
+const BLOCK_AFTER_DAYS = 7;
+
 export function middleware(_request: NextRequest) {
+  const now = new Date();
+  const diffTime = now.getTime() - ACTIVATION_DATE.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+  // Solo bloquear si han pasado más de 7 días desde la ACTIVATION_DATE
+  if (diffDays <= BLOCK_AFTER_DAYS) {
+    return NextResponse.next();
+  }
+
   const html = `
     <!DOCTYPE html>
     <html lang="es">
@@ -58,12 +71,12 @@ export function middleware(_request: NextRequest) {
       </p>
     </body>
     </html>
-  `
+  `;
 
   return new Response(html, {
     status: 503,
     headers: {
       'Content-Type': 'text/html',
     },
-  })
+  });
 }
