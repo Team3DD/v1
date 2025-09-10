@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Fecha de activación del middleware
-const ACTIVATION_DATE = new Date('2025-08-31T00:00:00Z'); // Ayer
+const ACTIVATION_DATE = new Date('2025-09-09T00:00:00Z'); // Ayer
 const BLOCK_AFTER_DAYS = 7;
 
 export function middleware(_request: NextRequest) {
