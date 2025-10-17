@@ -1,450 +1,353 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Award, Users, Clock, Shield, ArrowRight, Phone, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useState, useEffect, useCallback, useMemo } from "react"
+
+// Configuración de clínica
+const CLINIC_CONFIG = {
+  name: "Dr. Gil Bocardo - Ortopedia y Traumatología",
+  locations: [
+    {
+      name: "Hospital San José Satélite",
+      address: "Circuito Circunvalación Pte. 53",
+      schedule: "Martes y jueves"
+    },
+    {
+      name: "Hospital San Ángel Inn Satélite",
+      address: "Circuito Centro Comercial No. 20",
+      schedule: "Lunes, miércoles y viernes"
+    }
+  ]
+}
 
 // Configuración de Cloudinary
 const CLOUDINARY_CONFIG = {
-  cloudName: "dzidbhqli",
-  baseUrl: "https://res.cloudinary.com/dzidbhqli/image/upload",
-  transformations: {
-    auto_quality: "q_auto",
-    auto_format: "f_auto",
-    optimize: "c_scale,w_1000",
-    responsive: "c_fill,w_600,h_600,g_center"
-  }
+  cloudName: "dhtiz2ebk",
+  baseUrl: "https://res.cloudinary.com/dhtiz2ebk/image/upload"
 }
 
-// Función helper para generar URLs de Cloudinary con transformaciones
-const generateCloudinaryUrl = (publicId: string, transformations: string[] = []) => {
-  const baseTransforms = [
-    CLOUDINARY_CONFIG.transformations.auto_quality,
-    CLOUDINARY_CONFIG.transformations.auto_format,
-    CLOUDINARY_CONFIG.transformations.optimize
-  ]
-  const allTransforms = [...baseTransforms, ...transformations].join(",")
-  return `${CLOUDINARY_CONFIG.baseUrl}/${allTransforms}/${publicId}`
+// Mapeo de IDs de imagen a sus versiones de Cloudinary
+const IMAGE_VERSIONS: Record<string, string> = {
+  "9_lcfk3s": "v1760671158",
+  "10_xovud3": "v1760671161",
+  "8_xri4rq": "v1760671156",
+  "7_kkqewh": "v1760671153",
+  "6_n9203z": "v1760671152",
+  "5_cw3tuj": "v1760671149",
+  "13_veujvf": "v1760671167",
+  "12_kihwjw": "v1760671165",
+  "11_wkhndu": "v1760671161",
+  "15_eazs9r": "v1760671170",
+  "14_jocxra": "v1760671169",
+  "16_xuhpqb": "v1760671173",
+  "17_nyfjwa": "v1760671175",
+  "18_ssiv46": "v1760671177",
+  "24_yovld4": "v1760671997",
+  "3_ag5dgv": "v1760671145",
+  "22_fgh610": "v1760671184",
+  "23_ubai1k": "v1760671186",
+  "2_clrlj1": "v1760671143",
+  "20_zcreys": "v1760671180",
+  "19_fr2syo": "v1760671179",
+  "1_hqebyi": "v1760671142",
+  "21_ij1al1": "v1760671182"
 }
 
-// Datos del carrusel optimizados con URLs de Cloudinary
-const carouselImages = [
+// Función helper para generar URLs de Cloudinary optimizadas
+const getCloudinaryUrl = (imageId: string): string => {
+  const version = IMAGE_VERSIONS[imageId] || "v1760671000"
+  return `${CLOUDINARY_CONFIG.baseUrl}/${version}/${imageId}.jpg`
+}
+
+const medicalCases = [
   {
-    publicId: "12-LEO00628_x05ipg.jpg",
-    alt: "Consulta médica ortopédica profesional",
-    priority: true
+    id: 1,
+    title: "Reconstrucción de Ligamento Cruzado Anterior",
+    category: "Medicina Deportiva",
+    description: "Cirugía artroscópica exitosa en atleta profesional con retorno completo a la actividad deportiva.",
+    images: ["9_lcfk3s", "10_xovud3", "8_xri4rq"],
+    results: "Recuperación completa en 6 meses",
   },
   {
-    publicId: "logo_lq8w89.png",
-    alt: "Equipo médico especializado en ortopedia",
-    priority: false
+    id: 2,
+    title: "Artroplastia Total de Cadera",
+    category: "Cirugía Ortopédica",
+    description: "Reemplazo articular en paciente con artrosis severa, mejorando significativamente su calidad de vida.",
+    images: ["7_kkqewh", "6_n9203z", "5_cw3tuj"],
+    results: "Eliminación completa del dolor",
   },
   {
-    publicId: "8-LEO00527_dxywek.jpg",
-    alt: "Rehabilitación y fisioterapia ortopédica",
-    priority: false
+    id: 3,
+    title: "Artroscopia de Hombro",
+    category: "Artroscopia",
+    description: "Reparación de manguito rotador mediante técnica mínimamente invasiva con excelentes resultados.",
+    images: ["13_veujvf", "12_kihwjw", "11_wkhndu"],
+    results: "Movilidad completa restaurada",
   },
   {
-    publicId: "9-LEO00550_wxobwz.jpg",
-    alt: "Cirugía artroscópica moderna",
-    priority: false
+    id: 4,
+    title: "Rehabilitación Post-Quirúrgica",
+    category: "Rehabilitación",
+    description: "Programa integral de fisioterapia especializada para recuperación funcional óptima.",
+    images: ["15_eazs9r", "14_jocxra", "16_xuhpqb"],
+    results: "Retorno completo a actividades",
   },
   {
-    publicId: "3-LEO00469_x9ptjp.jpg",
-    alt: "Medicina deportiva y traumatología",
-    priority: false
+    id: 6,
+    title: "Cirugía de Columna Vertebral",
+    category: "Cirugía Ortopédica",
+    description: "Fusión vertebral para tratamiento de hernia discal con compresión radicular.",
+    images: ["17_nyfjwa", "18_ssiv46", "17_nyfjwa"],
+    results: "Alivio completo del dolor radicular",
+  },
+  {
+    id: 7,
+    title: "Lesión de Menisco",
+    category: "Medicina Deportiva",
+    description: "Reparación artroscópica de menisco medial con preservación del tejido nativo.",
+    images: ["24_yovld4", "3_ag5dgv", "24_yovld4"],
+    results: "Función articular preservada",
+  },
+  {
+    id: 8,
+    title: "Fractura de Muñeca",
+    category: "Traumatología",
+    description: "Reducción abierta y fijación interna de fractura de radio distal con placa volar.",
+    images: ["22_fgh610", "23_ubai1k", "2_clrlj1"],
+    results: "Movilidad completa de muñeca",
+  },
+  {
+    id: 9,
+    title: "Prótesis de Rodilla",
+    category: "Cirugía Ortopédica",
+    description: "Artroplastia total de rodilla con prótesis de última generación y navegación asistida.",
+    images: ["20_zcreys", "19_fr2syo", "15_eazs9r"],
+    results: "Marcha normal restaurada",
+  },
+  {
+    id: 10,
+    title: "Programa Preventivo",
+    category: "Prevención",
+    description: "Evaluación ergonómica y programa de ejercicios para prevención de lesiones laborales.",
+    images: ["1_hqebyi", "21_ij1al1", "20_zcreys"],
+    results: "Reducción 90% lesiones laborales",
   },
 ]
 
-// Datos de estadísticas
-const statsData = [
-  { icon: Award, number: "15+", label: "Años de Experiencia", color: "var(--medical-primary)" },
-  { icon: Users, number: "5000+", label: "Pacientes Atendidos", color: "var(--medical-secondary)" },
-  { icon: Clock, number: "24/7", label: "Urgencias", color: "var(--medical-primary)" },
-  { icon: Shield, number: "100%", label: "Certificado", color: "var(--medical-secondary)" },
-]
+// Componente reutilizable para navegación de imágenes
+const ImageNavigationButton = ({ direction, onClick, ariaLabel }: { 
+  direction: 'prev' | 'next'
+  onClick: () => void
+  ariaLabel: string 
+}) => (
+  <button
+    onClick={onClick}
+    className={`absolute ${direction === 'prev' ? 'left-4' : 'right-4'} top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110`}
+    style={{ backgroundColor: "var(--medical-white)", color: "var(--medical-primary)" }}
+    aria-label={ariaLabel}
+  >
+    {direction === 'prev' ? <ChevronLeft className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
+  </button>
+)
 
-// Configuraciones de animación
-const animationVariants = {
-  slideInLeft: {
-    initial: { opacity: 0, x: -50 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 0.8 }
-  },
-  slideInRight: {
-    initial: { opacity: 0, x: 50 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 0.8, delay: 0.4 }
-  },
-  fadeInUp: {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  },
-  scaleIn: {
-    initial: { opacity: 0, scale: 0.8 },
-    animate: { opacity: 1, scale: 1 },
-    transition: { duration: 0.5 }
-  }
-}
-
-export default function HeroSection() {
-  // Estados - FIJO: inicialización consistente para SSR
-  const [currentImage, setCurrentImage] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false) // CAMBIADO: inicia en false
+export default function MedicalCasesGallery() {
+  const [selectedCase, setSelectedCase] = useState<(typeof medicalCases)[0] | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isMounted, setIsMounted] = useState(false)
 
-  // Memoizar las URLs de las imágenes con transformaciones centradas
-  const optimizedImages = useMemo(() => 
-    carouselImages.map(img => ({
-      ...img,
-      src: generateCloudinaryUrl(img.publicId, ["c_fill,w_600,h_600,g_center"]),
-      srcLow: generateCloudinaryUrl(img.publicId, ["c_scale,w_300", "q_auto:low", "g_center"])
-    })),
-    []
-  )
-
-  // Fix para hidratación - esperar a que el componente se monte
   useEffect(() => {
     setIsMounted(true)
-    setIsAutoPlaying(true) // MOVIDO: activar autoplay solo después del mount
   }, [])
 
-  // Control automático del carrusel - solo después del mount
-  useEffect(() => {
-    if (!isMounted || !isAutoPlaying) return
+  const handleImageNavigation = (direction: 'next' | 'prev') => {
+    if (!selectedCase || !isMounted) return
     
-    const timer = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % carouselImages.length)
-    }, 6000)
-    
-    return () => clearInterval(timer)
-  }, [isMounted, isAutoPlaying])
+    setCurrentImageIndex((prev) => {
+      const total = selectedCase.images.length
+      return direction === 'next' 
+        ? (prev + 1) % total 
+        : (prev - 1 + total) % total
+    })
+  }
 
-  // Navegación del carrusel
-  const nextImage = useCallback(() => {
+  const handleOpenModal = (medicalCase: typeof medicalCases[0]) => {
     if (!isMounted) return
-    setCurrentImage((prev) => (prev + 1) % carouselImages.length)
-    setIsAutoPlaying(false)
-    // Reactivar autoplay después de 10 segundos
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }, [isMounted])
+    setSelectedCase(medicalCase)
+    setCurrentImageIndex(0)
+  }
 
-  const prevImage = useCallback(() => {
+  const handleCloseModal = () => {
     if (!isMounted) return
-    setCurrentImage((prev) => (prev - 1 + carouselImages.length) % carouselImages.length)
-    setIsAutoPlaying(false)
-    // Reactivar autoplay después de 10 segundos
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }, [isMounted])
-
-  const goToImage = useCallback((index: number) => {
-    if (!isMounted) return
-    setCurrentImage(index)
-    setIsAutoPlaying(false)
-    // Reactivar autoplay después de 10 segundos
-    setTimeout(() => setIsAutoPlaying(true), 10000)
-  }, [isMounted])
-
-  // Precargar la siguiente imagen - solo después del mount
-  useEffect(() => {
-    if (!isMounted || typeof window === 'undefined') return
-    
-    const nextIndex = (currentImage + 1) % carouselImages.length
-    const nextImg = new window.Image()
-    nextImg.src = optimizedImages[nextIndex].src
-  }, [currentImage, optimizedImages, isMounted])
+    setSelectedCase(null)
+    setCurrentImageIndex(0)
+  }
 
   return (
-    <section
-      className="py-16 lg:py-24 overflow-hidden relative"
-      style={{
-        background: `linear-gradient(135deg, var(--medical-neutral) 0%, var(--medical-white) 50%, var(--medical-light) 100%)`,
-        maxWidth: '100vw',
-        overflowX: 'hidden'
-      }}
+    <section 
+      className="py-16 lg:py-24 overflow-hidden"
+      style={{ backgroundColor: "var(--medical-light)" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
-          {/* Content Section */}
-          <motion.div
-            initial={animationVariants.slideInLeft.initial}
-            animate={animationVariants.slideInLeft.animate}
-            transition={animationVariants.slideInLeft.transition}
-            className="w-full max-w-full"
-          >
-            {/* Badge */}
-            <motion.div
-              initial={animationVariants.fadeInUp.initial}
-              animate={animationVariants.fadeInUp.animate}
-              transition={{ ...animationVariants.fadeInUp.transition, delay: 0.2 }}
-              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6"
-              style={{ backgroundColor: "var(--medical-light)", color: "var(--medical-primary)" }}
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              Especialista Certificado
-            </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-4 break-words" style={{ color: "var(--medical-primary)" }}>
+            Casos Médicos Exitosos
+          </h2>
+          <p className="text-xl max-w-3xl mx-auto break-words" style={{ color: "var(--medical-secondary)" }}>
+            Conozca algunos de nuestros casos más representativos y los excelentes resultados obtenidos para nuestros
+            pacientes.
+          </p>
+        </motion.div>
 
-            {/* Title */}
-            <motion.h1
-              initial={animationVariants.fadeInUp.initial}
-              animate={animationVariants.fadeInUp.animate}
-              transition={{ ...animationVariants.fadeInUp.transition, delay: 0.3, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight break-words"
-              style={{ color: "var(--medical-primary)" }}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+          {medicalCases.map((medicalCase, index) => (
+            <motion.div
+              key={medicalCase.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group cursor-pointer h-full w-full"
+              onClick={() => handleOpenModal(medicalCase)}
             >
-              Dr. Gil Bocardo
-              <span
-                className="block text-3xl sm:text-4xl lg:text-5xl mt-2"
-                style={{ color: "var(--medical-secondary)" }}
+              <div
+                className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 h-full flex flex-col w-full max-w-full"
+                style={{ backgroundColor: "var(--medical-white)", borderColor: "var(--medical-neutral)" }}
               >
-                Ortopedia y Traumatología
-              </span>
-            </motion.h1>
-
-            {/* Description */}
-            <motion.p
-              initial={animationVariants.fadeInUp.initial}
-              animate={animationVariants.fadeInUp.animate}
-              transition={{ ...animationVariants.fadeInUp.transition, delay: 0.5 }}
-              className="text-lg sm:text-xl mb-8 leading-relaxed max-w-2xl break-words"
-              style={{ color: "var(--medical-primary)" }}
-            >
-              Especialista certificado con más de 15 años de experiencia en el tratamiento de lesiones ortopédicas,
-              cirugía artroscópica y medicina deportiva. Comprometido con brindar atención médica de excelencia.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={animationVariants.fadeInUp.initial}
-              animate={animationVariants.fadeInUp.animate}
-              transition={{ ...animationVariants.fadeInUp.transition, delay: 0.7 }}
-              className="flex flex-col sm:flex-row gap-4 mb-12 w-full"
-            >
-              <Link href="/citas" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  variant="medical"
-                  className="group w-full"
-                >
-                  Agendar Consulta
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="tel:+525512345678" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  variant="medical-outline"
-                  className="group w-full hover:bg-medical-light"
-                  style={{
-                    ['--tw-bg-opacity' as any]: '1',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--medical-light)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                  }}
-                >
-                  <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                  Llamar Ahora
-                </Button>
-              </Link>
-            </motion.div>
-
-            {/* Stats Grid */}
-            <motion.div
-              initial={animationVariants.fadeInUp.initial}
-              animate={animationVariants.fadeInUp.animate}
-              transition={{ ...animationVariants.fadeInUp.transition, delay: 0.9, duration: 0.8 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full"
-            >
-              {statsData.map((stat, index) => (
-                <motion.div
-                  key={`${stat.label}-${index}`}
-                  initial={animationVariants.scaleIn.initial}
-                  animate={animationVariants.scaleIn.animate}
-                  transition={{ 
-                    ...animationVariants.scaleIn.transition, 
-                    delay: 1 + index * 0.1 
-                  }}
-                  className="text-center group hover:scale-105 transition-transform duration-300"
-                >
-                  <div className="flex justify-center mb-3">
-                    <div
-                      className="p-3 rounded-full shadow-md group-hover:shadow-lg transition-shadow"
-                      style={{ backgroundColor: "var(--medical-white)" }}
+                <div className="relative h-48 overflow-hidden flex-shrink-0">
+                  <Image
+                    src={getCloudinaryUrl(medicalCase.images[0])}
+                    alt={medicalCase.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: `linear-gradient(to top, rgba(3, 105, 161, 0.7) 0%, transparent 100%)` }}
+                  />
+                  <div className="absolute top-3 right-3">
+                    <span
+                      className="px-2 py-1 text-xs font-medium rounded-full break-words"
+                      style={{ backgroundColor: "var(--medical-primary)", color: "var(--medical-white)" }}
                     >
-                      <stat.icon className="h-6 w-6" style={{ color: stat.color }} />
-                    </div>
+                      {medicalCase.category}
+                    </span>
                   </div>
-                  <div className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: "var(--medical-primary)" }}>
-                    {stat.number}
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium" style={{ color: "var(--medical-secondary)" }}>
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Image Carousel Section */}
-          <motion.div
-            initial={animationVariants.slideInRight.initial}
-            animate={animationVariants.slideInRight.animate}
-            transition={animationVariants.slideInRight.transition}
-            className="relative w-full max-w-full"
-          >
-            <div className="relative z-10 w-full">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="relative overflow-hidden rounded-2xl shadow-2xl focus:outline-none w-full max-w-full"
-                onMouseEnter={() => isMounted && setIsAutoPlaying(false)}
-                onMouseLeave={() => isMounted && setIsAutoPlaying(true)}
-                style={{ 
-                  outline: 'none',
-                  border: 'none',
-                  backgroundColor: 'var(--medical-white)'
-                }}
-              >
-                {/* Contenedor cuadrado 1:1 */}
-                <div className="relative w-full aspect-square max-w-full overflow-hidden">
-                  {/* FIJO: renderizado condicional solo después del mount para el carrusel */}
-                  {isMounted ? (
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={`carousel-${currentImage}`} // MEJORADO: key más específico
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.5 }}
-                        className="absolute inset-0 flex items-center justify-center w-full h-full"
-                        style={{ backgroundColor: 'var(--medical-light)' }}
-                      >
-                        <Image
-                          src={optimizedImages[currentImage].src}
-                          alt={optimizedImages[currentImage].alt}
-                          fill
-                          className="object-contain"
-                          priority={optimizedImages[currentImage].priority}
-                          placeholder="blur"
-                          blurDataURL={optimizedImages[currentImage].srcLow}
-                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
-                          style={{ 
-                            outline: 'none', 
-                            border: 'none'
-                          }}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                  ) : (
-                    // Fallback estático para SSR
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center w-full h-full"
-                      style={{ backgroundColor: 'var(--medical-light)' }}
-                    >
-                      <Image
-                        src={optimizedImages[0].src}
-                        alt={optimizedImages[0].alt}
-                        fill
-                        className="object-contain"
-                        priority={optimizedImages[0].priority}
-                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
-                        style={{ 
-                          outline: 'none', 
-                          border: 'none'
-                        }}
-                      />
-                    </div>
-                  )}
                 </div>
-
-                {/* Navigation Buttons - Solo mostrar después del mount */}
-                {isMounted && (
-                  <div className="absolute inset-0 flex items-center justify-between p-4">
-                    <button
-                      onClick={prevImage}
-                      className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                      style={{ 
-                        backgroundColor: "var(--medical-white)", 
-                        color: "var(--medical-primary)",
-                        border: 'none'
-                      }}
-                      aria-label="Imagen anterior"
-                    >
-                      <ChevronLeft className="h-6 w-6" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                      style={{ 
-                        backgroundColor: "var(--medical-white)", 
-                        color: "var(--medical-primary)",
-                        border: 'none'
-                      }}
-                      aria-label="Siguiente imagen"
-                    >
-                      <ChevronRight className="h-6 w-6" />
-                    </button>
+                <div className="p-4 flex-1 flex flex-col w-full">
+                  <h3
+                    className="font-semibold mb-2 min-h-[3rem] flex items-start break-words"
+                    style={{ color: "var(--medical-primary)" }}
+                  >
+                    <span className="line-clamp-2">{medicalCase.title}</span>
+                  </h3>
+                  <p className="text-sm line-clamp-2 mb-3 flex-1 break-words" style={{ color: "var(--medical-secondary)" }}>
+                    {medicalCase.description}
+                  </p>
+                  <div className="mt-auto w-full pt-3 border-t" style={{ borderColor: "var(--medical-neutral)" }}>
+                    <span className="text-xs font-medium break-words" style={{ color: "var(--medical-secondary)" }}>
+                      {medicalCase.results}
+                    </span>
                   </div>
-                )}
-
-                {/* Indicators - Solo mostrar después del mount */}
-                {isMounted && (
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    {optimizedImages.map((_, index) => (
-                      <button
-                        key={`indicator-${index}`}
-                        onClick={() => goToImage(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                          index === currentImage ? "scale-125" : "opacity-60 hover:opacity-80"
-                        }`}
-                        style={{ 
-                          backgroundColor: "var(--medical-white)",
-                          border: 'none'
-                        }}
-                        aria-label={`Ir a imagen ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            </div>
-
-            {/* Background Decorations - Posicionamiento mejorado */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className="absolute -bottom-6 -right-6 w-[calc(100%-12px)] h-[calc(100%-12px)] rounded-2xl -z-10 shadow-xl max-w-full"
-              style={{
-                background: `linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-secondary) 100%)`,
-              }}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-              className="absolute -top-4 -left-4 w-24 h-24 rounded-full -z-20"
-              style={{ backgroundColor: "var(--medical-light)" }}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1.4 }}
-              className="absolute top-1/2 -right-8 w-16 h-16 rounded-full -z-20"
-              style={{ backgroundColor: "var(--medical-neutral)" }}
-            />
-          </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
+
+      {isMounted && (
+        <AnimatePresence>
+          {selectedCase && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ backgroundColor: "rgba(3, 105, 161, 0.9)", backdropFilter: "blur(10px)" }}
+              onClick={handleCloseModal}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                className="max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+                style={{ backgroundColor: "var(--medical-white)" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="relative w-full">
+                  <div className="relative h-96 overflow-hidden">
+                    <Image
+                      src={getCloudinaryUrl(selectedCase.images[currentImageIndex])}
+                      alt={selectedCase.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 80vw"
+                    />
+
+                    {selectedCase.images.length > 1 && (
+                      <>
+                        <ImageNavigationButton
+                          direction="prev"
+                          onClick={() => handleImageNavigation('prev')}
+                          ariaLabel="Imagen anterior"
+                        />
+                        <ImageNavigationButton
+                          direction="next"
+                          onClick={() => handleImageNavigation('next')}
+                          ariaLabel="Imagen siguiente"
+                        />
+                      </>
+                    )}
+
+                    <button
+                      onClick={handleCloseModal}
+                      className="absolute top-4 right-4 p-2 rounded-full shadow-lg transition-colors duration-200"
+                      style={{ backgroundColor: "var(--medical-white)", color: "var(--medical-primary)" }}
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  <div className="p-8 w-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <span
+                        className="px-3 py-1 text-sm font-medium rounded-full break-words"
+                        style={{ backgroundColor: "var(--medical-light)", color: "var(--medical-primary)" }}
+                      >
+                        {selectedCase.category}
+                      </span>
+                    </div>
+
+                    <h2 className="text-3xl font-serif font-bold mb-4 break-words" style={{ color: "var(--medical-primary)" }}>
+                      {selectedCase.title}
+                    </h2>
+
+                    <p className="text-lg mb-6 leading-relaxed break-words" style={{ color: "var(--medical-secondary)" }}>
+                      {selectedCase.description}
+                    </p>
+
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: "var(--medical-neutral)" }}>
+                      <h4 className="font-semibold mb-2" style={{ color: "var(--medical-primary)" }}>
+                        Resultado:
+                      </h4>
+                      <p className="break-words" style={{ color: "var(--medical-secondary)" }}>{selectedCase.results}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </section>
   )
 }
