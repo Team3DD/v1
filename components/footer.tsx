@@ -326,7 +326,7 @@ const FooterBottom = () => (
 
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
       <p className="text-gray-400 text-sm mb-2 md:mb-0 break-words">
-        by{" "}
+        Design & Development by{" "}
         <span className="text-red-500 hover:text-sky-400 transition-colors cursor-pointer font-medium">
           team 3
         </span>
