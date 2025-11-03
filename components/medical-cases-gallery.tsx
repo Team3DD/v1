@@ -22,17 +22,52 @@ const CLINIC_CONFIG = {
   ]
 }
 
+// Configuración de Cloudinary
+const CLOUDINARY_CONFIG = {
+  cloudName: "dhtiz2ebk",
+  baseUrl: "https://res.cloudinary.com/dhtiz2ebk/image/upload"
+}
+
+// Mapeo de IDs de imagen a sus versiones de Cloudinary
+const IMAGE_VERSIONS: Record<string, string> = {
+  "9_lcfk3s": "v1760671158",
+  "10_xovud3": "v1760671161",
+  "8_xri4rq": "v1760671156",
+  "7_kkqewh": "v1760671153",
+  "6_n9203z": "v1760671152",
+  "5_cw3tuj": "v1760671149",
+  "13_veujvf": "v1760671167",
+  "12_kihwjw": "v1760671165",
+  "11_wkhndu": "v1760671161",
+  "15_eazs9r": "v1760671170",
+  "14_jocxra": "v1760671169",
+  "16_xuhpqb": "v1760671173",
+  "17_nyfjwa": "v1760671175",
+  "18_ssiv46": "v1760671177",
+  "24_yovld4": "v1760671997",
+  "3_ag5dgv": "v1760671145",
+  "22_fgh610": "v1760671184",
+  "23_ubai1k": "v1760671186",
+  "2_clrlj1": "v1760671143",
+  "20_zcreys": "v1760671180",
+  "19_fr2syo": "v1760671179",
+  "1_hqebyi": "v1760671142",
+  "21_ij1al1": "v1760671182"
+}
+
+// Función helper para generar URLs de Cloudinary optimizadas
+const getCloudinaryUrl = (imageId: string): string => {
+  const version = IMAGE_VERSIONS[imageId] || "v1760671000"
+  return `${CLOUDINARY_CONFIG.baseUrl}/${version}/${imageId}.jpg`
+}
+
 const medicalCases = [
   {
     id: 1,
     title: "Reconstrucción de Ligamento Cruzado Anterior",
     category: "Medicina Deportiva",
     description: "Cirugía artroscópica exitosa en atleta profesional con retorno completo a la actividad deportiva.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671158/9_lcfk3s.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671161/10_xovud3.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671156/8_xri4rq.jpg",      
-    ],
+    images: ["9_lcfk3s", "10_xovud3", "8_xri4rq"],
     results: "Recuperación completa en 6 meses",
   },
   {
@@ -40,11 +75,7 @@ const medicalCases = [
     title: "Artroplastia Total de Cadera",
     category: "Cirugía Ortopédica",
     description: "Reemplazo articular en paciente con artrosis severa, mejorando significativamente su calidad de vida.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671153/7_kkqewh.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671152/6_n9203z.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671149/5_cw3tuj.jpg",
-    ],
+    images: ["7_kkqewh", "6_n9203z", "5_cw3tuj"],
     results: "Eliminación completa del dolor",
   },
   {
@@ -52,11 +83,7 @@ const medicalCases = [
     title: "Artroscopia de Hombro",
     category: "Artroscopia",
     description: "Reparación de manguito rotador mediante técnica mínimamente invasiva con excelentes resultados.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671167/13_veujvf.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671165/12_kihwjw.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671161/11_wkhndu.jpg",
-    ],
+    images: ["13_veujvf", "12_kihwjw", "11_wkhndu"],
     results: "Movilidad completa restaurada",
   },
   {
@@ -64,11 +91,7 @@ const medicalCases = [
     title: "Rehabilitación Post-Quirúrgica",
     category: "Rehabilitación",
     description: "Programa integral de fisioterapia especializada para recuperación funcional óptima.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671170/15_eazs9r.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671169/14_jocxra.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671173/16_xuhpqb.jpg",
-    ],
+    images: ["15_eazs9r", "14_jocxra", "16_xuhpqb"],
     results: "Retorno completo a actividades",
   },
   {
@@ -76,11 +99,7 @@ const medicalCases = [
     title: "Cirugía de Columna Vertebral",
     category: "Cirugía Ortopédica",
     description: "Fusión vertebral para tratamiento de hernia discal con compresión radicular.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671175/17_nyfjwa.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671177/18_ssiv46.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671175/17_nyfjwa.jpg",
-    ],
+    images: ["17_nyfjwa", "18_ssiv46", "17_nyfjwa"],
     results: "Alivio completo del dolor radicular",
   },
   {
@@ -88,11 +107,7 @@ const medicalCases = [
     title: "Lesión de Menisco",
     category: "Medicina Deportiva",
     description: "Reparación artroscópica de menisco medial con preservación del tejido nativo.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671997/24_yovld4.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671145/3_ag5dgv.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671997/24_yovld4.jpg",
-    ],
+    images: ["24_yovld4", "3_ag5dgv", "24_yovld4"],
     results: "Función articular preservada",
   },
   {
@@ -100,11 +115,7 @@ const medicalCases = [
     title: "Fractura de Muñeca",
     category: "Traumatología",
     description: "Reducción abierta y fijación interna de fractura de radio distal con placa volar.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671184/22_fgh610.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671186/23_ubai1k.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671143/2_clrlj1.jpg",
-    ],
+    images: ["22_fgh610", "23_ubai1k", "2_clrlj1"],
     results: "Movilidad completa de muñeca",
   },
   {
@@ -112,11 +123,7 @@ const medicalCases = [
     title: "Prótesis de Rodilla",
     category: "Cirugía Ortopédica",
     description: "Artroplastia total de rodilla con prótesis de última generación y navegación asistida.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671180/20_zcreys.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671179/19_fr2syo.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671170/15_eazs9r.jpg",
-    ],
+    images: ["20_zcreys", "19_fr2syo", "15_eazs9r"],
     results: "Marcha normal restaurada",
   },
   {
@@ -124,11 +131,7 @@ const medicalCases = [
     title: "Programa Preventivo",
     category: "Prevención",
     description: "Evaluación ergonómica y programa de ejercicios para prevención de lesiones laborales.",
-    images: [
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671142/1_hqebyi.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671182/21_ij1al1.jpg",
-      "https://res.cloudinary.com/dhtiz2ebk/image/upload/v1760671180/20_zcreys.jpg",
-    ],
+    images: ["1_hqebyi", "21_ij1al1", "20_zcreys"],
     results: "Reducción 90% lesiones laborales",
   },
 ]
@@ -147,35 +150,6 @@ const ImageNavigationButton = ({ direction, onClick, ariaLabel }: {
   >
     {direction === 'prev' ? <ChevronLeft className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
   </button>
-)
-
-// Componente para indicadores de imagen
-const ImageIndicator = ({ 
-  total, 
-  current, 
-  onSelect 
-}: { 
-  total: number
-  current: number
-  onSelect: (index: number) => void 
-}) => (
-  <div className="flex space-x-1 flex-shrink-0 ml-2">
-    {Array.from({ length: total }).map((_, index) => (
-      <button
-        key={index}
-        onClick={(e) => {
-          e.stopPropagation()
-          onSelect(index)
-        }}
-        className="w-2 h-2 rounded-full transition-all duration-300"
-        style={{ 
-          backgroundColor: index === current ? "var(--medical-primary)" : "var(--medical-light)",
-          transform: index === current ? "scale(1.25)" : "scale(1)"
-        }}
-        aria-label={`Ver imagen ${index + 1}`}
-      />
-    ))}
-  </div>
 )
 
 export default function MedicalCasesGallery() {
@@ -249,7 +223,7 @@ export default function MedicalCasesGallery() {
               >
                 <div className="relative h-48 overflow-hidden flex-shrink-0">
                   <Image
-                    src={medicalCase.images[0] || "/placeholder.svg"}
+                    src={getCloudinaryUrl(medicalCase.images[0])}
                     alt={medicalCase.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -278,15 +252,10 @@ export default function MedicalCasesGallery() {
                   <p className="text-sm line-clamp-2 mb-3 flex-1 break-words" style={{ color: "var(--medical-secondary)" }}>
                     {medicalCase.description}
                   </p>
-                  <div className="flex items-center justify-between mt-auto w-full">
-                    <span className="text-xs font-medium break-words flex-1" style={{ color: "var(--medical-secondary)" }}>
+                  <div className="mt-auto w-full pt-3 border-t" style={{ borderColor: "var(--medical-neutral)" }}>
+                    <span className="text-xs font-medium break-words" style={{ color: "var(--medical-secondary)" }}>
                       {medicalCase.results}
                     </span>
-                    <ImageIndicator 
-                      total={medicalCase.images.length}
-                      current={0}
-                      onSelect={() => {}}
-                    />
                   </div>
                 </div>
               </div>
@@ -317,7 +286,7 @@ export default function MedicalCasesGallery() {
                 <div className="relative w-full">
                   <div className="relative h-96 overflow-hidden">
                     <Image
-                      src={selectedCase.images[currentImageIndex] || "/placeholder.svg"}
+                      src={getCloudinaryUrl(selectedCase.images[currentImageIndex])}
                       alt={selectedCase.title}
                       fill
                       className="object-cover"
@@ -338,19 +307,6 @@ export default function MedicalCasesGallery() {
                         />
                       </>
                     )}
-
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                      {selectedCase.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            index === currentImageIndex ? "scale-125" : "opacity-60 hover:opacity-80"
-                          }`}
-                          style={{ backgroundColor: "var(--medical-white)" }}
-                        />
-                      ))}
-                    </div>
 
                     <button
                       onClick={handleCloseModal}

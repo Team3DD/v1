@@ -31,8 +31,9 @@ const generateCloudinaryUrl = (publicId: string, transformations: string[] = [])
 // Datos de navegación
 const navigationLinks = [
   { href: "/", label: "Inicio" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#sobre-mi", label: "Sobre Mí" },
+  { href: "/#servicios", label: "Servicios" },
+  { href: "/#sobre-mi", label: "Sobre Mí" },
+  { href: "/#reviews", label: "Reviews" },
   { href: "/blog", label: "Blog" },
   { href: "/contacto", label: "Contacto" }
 ]
