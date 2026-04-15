@@ -35,7 +35,7 @@ const navigationLinks = [
   { href: "/#sobre-mi", label: "Sobre Mí" },
   { href: "/#reviews", label: "Reviews" },
   { href: "/blog", label: "Blog" },
-  { href: "/contacto", label: "Contacto" }
+  { href: "/citas", label: "Agendar cita" }
 ]
 
 // Tipos para el componente NavLink
@@ -48,6 +48,7 @@ interface NavLinkProps {
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [greeting, setGreeting] = useState<string>("")
 
   // URLs del logo optimizadas
   const logoUrls = useMemo(() => ({
@@ -55,6 +56,27 @@ export default function Header() {
     large: generateCloudinaryUrl("DRGILlogo_r2bbeq.png", [CLOUDINARY_CONFIG.transformations.logo_large]),
     lowQuality: generateCloudinaryUrl("DRGILlogo_r2bbeq.png", ["c_fit,w_60,h_20", "q_auto:low"])
   }), [])
+
+  // Lógica para obtener el saludo basado en la hora de México
+  useEffect(() => {
+    const getGreeting = () => {
+      const now = new Date()
+      const mexicoTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Mexico_City" }))
+      const hours = mexicoTime.getHours()
+      
+      if (hours >= 6 && hours < 12) return "Buenos días"
+      if (hours >= 12 && hours < 19) return "Buenas tardes"
+      return "Buenas noches"
+    }
+    
+    setGreeting(getGreeting())
+  }, [])
+
+  // Genera la URL de WhatsApp con el saludo personalizado
+  const getWhatsAppUrl = useCallback(() => {
+    const message = `${greeting}, Dr. Gil Bocardo, tengo una emergencia, espero me pueda atender.`
+    return `https://wa.me/5523431295?text=${encodeURIComponent(message)}`
+  }, [greeting])
 
   // Manejo del scroll optimizado con threshold más suave
   const handleScroll = useCallback(() => {
@@ -173,13 +195,13 @@ export default function Header() {
                     {link.label}
                   </NavLink>
                 ))}
-                <Link href="/citas">
-                  <Button className={`btn-medical transition-all duration-300 hover:scale-105 ${
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
+                  <Button variant="destructive" className={`transition-all duration-300 hover:scale-105 ${
                     isScrolled ? "px-4 py-2 text-sm" : ""
                   }`}>
-                    Agendar Cita
+                    Urgencias
                   </Button>
-                </Link>
+                </a>
               </nav>
 
               {/* Navegación Tablet y Mobile - Botón Cita + Menú */}
@@ -222,11 +244,11 @@ export default function Header() {
                 </NavLink>
               ))}
               <div className="pt-3 border-t" style={{ borderColor: "var(--medical-light)" }}>
-                <Link href="/citas" onClick={handleLinkClick}>
-                  <Button className="btn-medical w-full">
-                    Agendar Cita
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
+                  <Button variant="destructive" className="w-full">
+                    Urgencias
                   </Button>
-                </Link>
+                </a>
               </div>
             </nav>
           </div>

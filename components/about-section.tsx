@@ -106,9 +106,9 @@ const credentials = [
     icon: GraduationCap,
     title: "Formación Académica",
     items: [
-      "Médico Cirujano - UNAM",
-      "Especialidad en Ortopedia y Traumatología - Hospital ABC",
-      "Fellowship en Cirugía Artroscópica - Mayo Clinic",
+      "Médico, Cirujanoy partero por IPN",
+      "Traumatólogo y Ortopedista IMSS Lomas Verdes",
+      "Alta Especialidad en cirugía de Reemplazo articular cadera y rodilla",   
     ],
   },
   {
@@ -116,8 +116,8 @@ const credentials = [
     title: "Certificaciones",
     items: [
       "Consejo Mexicano de Ortopedia y Traumatología",
-      "American Academy of Orthopaedic Surgeons",
-      "Arthroscopy Association of North America",
+      "Colegio Mexicano de Ortopedia y Traumatología",
+      "Sociedad Mexicana de Cirugia de cadera", 
     ],
   },
   {
@@ -125,14 +125,20 @@ const credentials = [
     title: "Experiencia",
     items: [
       "15+ años de práctica clínica",
-      "Médico del equipo de fútbol profesional",
+      "Médico del equipo de fútbol profesional de Médico",
+      "Cirugías de alta complejidad ",
       "Más de 2000 cirugías realizadas",
     ],
   },
   {
     icon: MapPin,
     title: "Ubicaciones",
-    items: ["Hospital ABC Santa Fe", "Clínica Londres", "Consultorio Polanco"],
+    items: [
+      "Hospital San José Satélite",
+      "Circuito Circunvalación Pte. 53",
+      "Hospital San Ángel Inn Satélite",
+      "Circuito Centro Comercial No. 20", 
+    ],
   },
 ] as const
 
