@@ -134,10 +134,8 @@ const credentials = [
     icon: MapPin,
     title: "Ubicaciones",
     items: [
-      "Hospital San José Satélite",
-      "Circuito Circunvalación Pte. 53",
-      "Hospital San Ángel Inn Satélite",
-      "Circuito Centro Comercial No. 20", 
+      "Hospital San José Satélite n\ Circuito Circunvalación Pte. 53",
+      "Hospital San Ángel Inn Satélite n\ Circuito Centro Comercial No. 20", 
     ],
   },
 ] as const
@@ -406,16 +404,16 @@ export default function AboutSection() {
                   borderColor: "var(--medical-light)",
                 }}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3">
-                    <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: "var(--medical-light)" }}>
-                      <credential.icon className="h-5 w-5" style={{ color: "var(--medical-primary)" }} />
+                <CardContent>
+                  <div className="flex items-center">
+                    <div className="p-2 rounded-lg mr-3 mb-4" style={{ backgroundColor: "var(--medical-light)" }}>
+                      <credential.icon className="h-6 w-6" style={{ color: "var(--medical-primary)" }} />
                     </div>
-                    <h3 className="font-semibold text-sm break-words flex-1" style={{ color: "var(--medical-primary)" }}>
+                    <h3 className="font-semibold text-md break-words flex-1" style={{ color: "var(--medical-primary)" }}>
                       {credential.title}
                     </h3>
                   </div>
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-3.5 whitespace-pre-line m-4">
                     {credential.items.map((item, itemIndex) => (
                       <li
                         key={itemIndex}

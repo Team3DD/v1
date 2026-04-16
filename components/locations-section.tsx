@@ -3,6 +3,7 @@
 import { MapPin, Phone } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { useState, useEffect } from "react"
 
 interface Location {
   name: string
@@ -30,8 +31,27 @@ const locations: Location[] = [
 ]
 
 export default function LocationsSection() {
+  const [greeting, setGreeting] = useState("")
+
+  useEffect(() => {
+    const getGreeting = () => {
+      const now = new Date()
+      const mexicoTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Mexico_City" }))
+      const hours = mexicoTime.getHours()
+      if (hours >= 6 && hours < 12) return "Buenos días"
+      if (hours >= 12 && hours < 19) return "Buenas tardes"
+      return "Buenas noches"
+    }
+    setGreeting(getGreeting())
+  }, [])
+
+  const getWhatsAppUrl = () => {
+    const message = `${greeting}, Dr. Gil Bocardo, tengo una emergencia, espero me pueda atender.`
+    return `https://wa.me/525512345678?text=${encodeURIComponent(message)}`
+  }
+
   return (
-    <section className="py-16 lg:py-20 bg-white overflow-hidden"> {/* Agregado overflow-hidden */}
+    <section className="py-16 lg:py-20 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Title */}
         <motion.div
@@ -125,7 +145,7 @@ export default function LocationsSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
             <Link
-              href="#contacto"
+              href="/citas"
               className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 w-full sm:w-auto"
               style={{
                 backgroundColor: "var(--medical-primary)",
@@ -135,7 +155,9 @@ export default function LocationsSection() {
               Contactar ahora
             </Link>
             <a
-              href="tel:+525512345678"
+              href={getWhatsAppUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2 w-full sm:w-auto"
               style={{
                 borderColor: "var(--medical-primary)",

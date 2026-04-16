@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { Award, Users, Clock, Shield, ArrowRight, Phone, ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"  // ← importado para Agendar Consulta
 
 // Configuración de Cloudinary
 const CLOUDINARY_CONFIG = {
@@ -44,6 +45,25 @@ export default function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [greeting, setGreeting] = useState("") // ← para el saludo de urgencias
+
+  // Obtener saludo basado en hora de México
+  useEffect(() => {
+    const getGreeting = () => {
+      const now = new Date()
+      const mexicoTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Mexico_City" }))
+      const hours = mexicoTime.getHours()
+      if (hours >= 6 && hours < 12) return "Buenos días"
+      if (hours >= 12 && hours < 19) return "Buenas tardes"
+      return "Buenas noches"
+    }
+    setGreeting(getGreeting())
+  }, [])
+
+  const getWhatsAppUrl = () => {
+    const message = `${greeting}, Dr. Gil Bocardo, tengo una emergencia, espero me pueda atender.`
+    return `https://wa.me/525512345678?text=${encodeURIComponent(message)}`
+  }
 
   const optimizedImages = useMemo(() => 
     carouselImages.map(img => ({
@@ -152,39 +172,43 @@ export default function HeroSection() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <button 
-                className="group w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center hover:shadow-lg hover:scale-105"
-                style={{ 
-                  backgroundColor: "var(--medical-primary)", 
-                  color: "var(--medical-white)" 
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--medical-primary-hover)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--medical-primary)'
-                }}
-              >
-                Agendar Consulta
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button 
-                className="group w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center hover:shadow-md"
-                style={{ 
-                  border: "2px solid var(--medical-primary)", 
-                  color: "var(--medical-primary)",
-                  backgroundColor: "transparent"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--medical-light)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent'
-                }}
-              >
-                <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                Llamar Ahora
-              </button>
+              <Link href="/citas" className="w-full sm:w-auto">
+                <button 
+                  className="group w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center hover:shadow-lg hover:scale-105"
+                  style={{ 
+                    backgroundColor: "var(--medical-primary)", 
+                    color: "var(--medical-white)" 
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--medical-primary-hover)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--medical-primary)'
+                  }}
+                >
+                  Agendar Consulta
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <button 
+                  className="group w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center hover:shadow-md"
+                  style={{ 
+                    border: "2px solid var(--medical-primary)", 
+                    color: "var(--medical-primary)",
+                    backgroundColor: "transparent"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--medical-light)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                  }}
+                >
+                  <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
+                  Llamar Ahora
+                </button>
+              </a>
             </div>
 
             {/* Stats Grid */}

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   formatDetection: {
     email: false,
     address: false,
-    telephone: false,
+    telephone: true, // Permitir detección de teléfonos (coherente con botones)
   },
   metadataBase: new URL("https://ortopediagilbocardo.com"),
   alternates: {
@@ -87,12 +87,12 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
+    google: "your-google-verification-code", // Reemplazar con código real
     yandex: "your-yandex-verification-code",
   },
 }
 
-// JSON-LD Schema for Medical Organization
+// JSON-LD Schema for MedicalOrganization con direcciones reales y redes sociales
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "MedicalOrganization",
@@ -104,22 +104,38 @@ const jsonLd = {
   description:
     "Especialista certificado en Ortopedia y Traumatología con más de 15 años de experiencia en Ciudad de México.",
   medicalSpecialty: ["Orthopedic Surgery", "Trauma Surgery", "Sports Medicine", "Arthroscopy", "Spine Surgery"],
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Av. Insurgentes Sur 1234",
-    addressLocality: "Ciudad de México",
-    addressRegion: "CDMX",
-    postalCode: "03100",
-    addressCountry: "MX",
-  },
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: 19.4326,
-    longitude: -99.1332,
-  },
+  // Dos ubicaciones reales
+  location: [
+    {
+      "@type": "Place",
+      name: "Hospital San José Satélite",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Circuito Circunvalación Pte. 53",
+        addressLocality: "Ciudad de México",
+        addressRegion: "CDMX",
+        postalCode: "53100",
+        addressCountry: "MX",
+      },
+      hasMap: "https://maps.google.com/?q=19.5102,-99.2384",
+    },
+    {
+      "@type": "Place",
+      name: "Hospital San Ángel Inn Satélite",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Circuito Centro Comercial No. 20",
+        addressLocality: "Ciudad de México",
+        addressRegion: "CDMX",
+        postalCode: "53100",
+        addressCountry: "MX",
+      },
+      hasMap: "https://maps.google.com/?q=19.5089,-99.2389",
+    },
+  ],
   contactPoint: {
     "@type": "ContactPoint",
-    telephone: "+52-55-1234-5678",
+    telephone: "+52-55-1234-5678", // Número principal de contacto (WhatsApp/urgencias)
     contactType: "customer service",
     availableLanguage: ["Spanish", "English"],
     areaServed: "MX",
@@ -178,10 +194,9 @@ const jsonLd = {
     ],
   },
   sameAs: [
-    "https://www.facebook.com/DrGilBocardo",
-    "https://www.instagram.com/DrGilBocardo",
-    "https://www.linkedin.com/in/gil-bocardo",
-    "https://twitter.com/DrGilBocardo",
+    "https://www.facebook.com/people/Ortho-Trauma-DGil/100064437921918/",
+    "https://www.instagram.com/ortopediagilbocardo/",
+    // Si tienes LinkedIn o Twitter reales, agrégalos; de lo contrario, omítelos
   ],
 }
 
