@@ -6,12 +6,14 @@ import LocationsSection from "@/components/locations-section"
 import MedicalCasesGallery from "@/components/medical-cases-gallery"
 import GoogleReviews from "@/components/google-reviews"
 import Footer from "@/components/footer"
+import LogoCarousel from "@/components/LogoCarousel"
 
 export default function HomePage() {
   return (
     <main className="min-h-screen">
       <Header />
       <HeroSection />
+      <LogoCarousel />
       <ServicesSection />
       <AboutSection />
       <LocationsSection />
