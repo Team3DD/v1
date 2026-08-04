@@ -62,7 +62,7 @@ export default function HeroSection() {
 
   const getWhatsAppUrl = () => {
     const message = `${greeting}, Dr. Gil Bocardo, tengo una emergencia, espero me pueda atender.`
-    return `https://wa.me/525512345678?text=${encodeURIComponent(message)}`
+    return `https://wa.me/525523431295?text=${encodeURIComponent(message)}`
   }
 
   const optimizedImages = useMemo(() => 
