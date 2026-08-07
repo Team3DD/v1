@@ -44,14 +44,14 @@ const FOOTER_CONFIG: FooterConfig = {
   },
   locations: [
     {
-      name: "Consultorio San José Satélite",
-      address: "Circuito Circunvalación Pte. 53",
-      days: "Martes y jueves"
+      name: "Consultorio Hospital San José Satélite",
+      address: "Circuito Circunvalación Pte. 53, Cd. Satélite, 53100 Naucalpan de Juárez, Edo. de México.",
+      days: "Atención martes y jueves"
     },
     {
-      name: "Consultorio San Ángel Inn - Samará Satélite",
-      address: "Circuito Centro Comercial No. 20",
-      days: "Lunes, miércoles y viernes"
+      name: "Consultorio 1406 Hospital San Ángel Inn - Satélite",
+      address: "Circuito Centro Comercial No. 20, Ciudad Satélite, Naucalpan de Juárez, Edo. de México.",
+      days: "Atención lunes, miércoles y viernes"
     }
   ],
   services: [
@@ -224,7 +224,7 @@ const ContactSection = ({ email }: { email: string }) => {
           <button
             className="px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 text-center min-w-[140px] bg-[var(--destructive)]/80 hover:bg-[var(--destructive)] text-white/90"
           >
-            Urgencias
+            55 2343 1295
           </button>
         </a>
         <div>

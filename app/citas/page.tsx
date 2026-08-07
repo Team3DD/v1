@@ -20,8 +20,9 @@ const MapCard = ({
   googleMapsUrl: string
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-      <div className="h-80 bg-gray-100 relative">
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col h-full">
+      {/* Mapa - Ocupa la parte superior */}
+      <div className="h-80 w-full bg-gray-100 relative shrink-0">
         <iframe
           src={mapSrc}
           width="100%"
@@ -32,29 +33,31 @@ const MapCard = ({
           referrerPolicy="no-referrer-when-downgrade"
           title={`Mapa de ${title}`}
         />
-        <a
-          href={googleMapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute inset-0 bg-transparent hover:bg-black hover:bg-opacity-5 transition-all duration-300 flex items-center justify-center group"
-        >
-          <div className="bg-white bg-opacity-90 px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <span className="text-xs font-medium text-gray-700">Abrir en Google Maps</span>
-          </div>
-        </a>
       </div>
-      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-2 items-end" style={{ backgroundColor: 'var(--medical-light)' }}>
-        <div>
-          <h4 className="font-bold text-lg mb-1" style={{ color: 'var(--medical-primary)' }}>{title}</h4>
-          <p className="text-sm mb-1" style={{ color: 'var(--medical-secondary)' }}>{address}</p>
-          <p className="text-sm font-medium" style={{ color: 'var(--medical-secondary)' }}>{schedule}</p>
+
+      {/* Bloque inferior de información (estilo tarjeta azul) */}
+      <div 
+        className="p-5 flex-1 flex flex-col sm:flex-row sm:items-end justify-between gap-4"
+        style={{ backgroundColor: 'var(--medical-light)' }}
+      >
+        <div className="flex flex-col gap-1">
+          <h4 className="font-bold text-lg leading-tight" style={{ color: 'var(--medical-primary)' }}>
+            {title}
+          </h4>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--medical-secondary)' }}>
+            {address}
+          </p>
+          <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--medical-secondary)' }}>
+            {schedule}
+          </p>
         </div>
-        <div className="flex justify-end">
+
+        <div className="flex justify-start sm:justify-end shrink-0">
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 hover:scale-105 shadow-sm whitespace-nowrap"
             style={{ backgroundColor: 'var(--medical-accent)', color: 'var(--medical-white)' }}
           >
             <MapPin className="mr-2 h-4 w-4" /> Ver en Google Maps
@@ -197,21 +200,21 @@ Por favor confirmar disponibilidad.`
 }
 
   const consultoriosData = [
-    {
-      title: "Hospital San José Satélite",
-      address: "Circuito Circunvalación Pte. 53",
-      schedule: "Martes y jueves",
-      mapSrc: "https://maps.google.com/maps?q=19.5102,-99.2384&t=&z=16&ie=UTF8&output=embed",
-      googleMapsUrl: "https://maps.google.com/?q=19.5102,-99.2384"
-    },
-    {
-      title: "Hospital San Ángel Inn Satélite",
-      address: "Circuito Centro Comercial No. 20",
-      schedule: "Lunes, miércoles y viernes",
-      mapSrc: "https://maps.google.com/maps?q=19.5089,-99.2389&t=&z=16&ie=UTF8&output=embed",
-      googleMapsUrl: "https://maps.google.com/?q=19.5089,-99.2389"
-    }
-  ]
+  {
+    title: "Consultorio Hospital San José Satélite",
+    address: "Circuito Circunvalación Pte. 53, Cd. Satélite, 53100 Naucalpan de Juárez, Edo. de México.",
+    schedule: "Atención martes y jueves",
+    mapSrc: "https://maps.google.com/maps?q=Hospital+San+José+Satélite,+Circuito+Circunvalación+Pte.+53,+Naucalpan&t=&z=16&ie=UTF8&output=embed",
+    googleMapsUrl: "https://maps.app.goo.gl/hjWJxr3A2ZkNrUX18"
+  },
+  {
+    title: "Consultorio 1406 Hospital San Ángel Inn - Satélite",
+    address: "Circuito Centro Comercial No. 20, Ciudad Satélite, Naucalpan de Juárez, Edo. de México.",
+    schedule: "Atención lunes, miércoles y viernes",
+    mapSrc: "https://maps.google.com/maps?q=Hospital+San+Ángel+Inn+Satélite,+Circuito+Centro+Comercial+No.+20,+Naucalpan&t=&z=16&ie=UTF8&output=embed",
+    googleMapsUrl: "https://maps.app.goo.gl/1JX98yKs1aki7EuAA"
+  }
+]
 
   return (
     <main className="min-h-screen">

@@ -304,7 +304,7 @@ export default function ServicesSection() {
           <Link href="/citas">
             <Button 
               size={isMobile ? "default" : "lg"} 
-              className="btn-medical hover:scale-105 transition-all duration-300 hover:shadow-lg text-sm sm:text-base px-6 sm:px-8"
+              className="btn-default hover:scale-105 transition-all duration-300 hover:shadow-lg text-sm sm:text-base px-6 sm:px-8"
             >
               Agendar Consulta
             </Button>
@@ -428,7 +428,7 @@ export default function ServicesSection() {
                 <div className="mt-6 sm:mt-8 text-center">
                   <Link href="/citas">
                     <Button 
-                      className="btn-medical w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8"
+                      className="btn-default w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8"
                       size={isMobile ? "default" : "lg"}
                     >
                       Agendar Consulta

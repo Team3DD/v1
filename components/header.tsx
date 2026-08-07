@@ -199,7 +199,7 @@ export default function Header() {
                   <Button variant="destructive" className={`transition-all duration-300 hover:scale-105 ${
                     isScrolled ? "px-4 py-2 text-sm" : ""
                   }`}>
-                    Urgencias
+                    55 2343 1295
                   </Button>
                 </a>
               </nav>
@@ -246,7 +246,7 @@ export default function Header() {
               <div className="pt-3 border-t" style={{ borderColor: "var(--medical-light)" }}>
                 <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
                   <Button variant="destructive" className="w-full">
-                    Urgencias
+                    55 2343 1295
                   </Button>
                 </a>
               </div>
